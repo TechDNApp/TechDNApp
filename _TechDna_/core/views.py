@@ -1,9 +1,8 @@
+import logging
 from django.shortcuts import render
 
+logger = logging.getLogger(__name__)
 
 def home(request):
-    context = {
-        "platform_name": "Tech DNA",
-        "academy": "Ducky Academy",
-    }
-    return render(request, "core/home.html", context)
+    logger.info("Home view rendered")
+    return render(request, "core/home.html")
