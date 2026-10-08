@@ -1,15 +1,18 @@
-{% load static %}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear cuenta</title>
+{% block title %}Crear cuenta | Tech DNA{% endblock %}
 
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
+{% block content %}
+<section>
+    <h1>Crear cuenta</h1>
 
-<body>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">
+            Registrarse
+        </button>
+    </form>
 
     <div class="auth-page">
 
