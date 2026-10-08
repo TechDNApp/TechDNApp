@@ -1,33 +1,22 @@
-{% load static %}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Crear cuenta</title>
+{% block title %}Crear cuenta | Tech DNA{% endblock %}
 
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
+{% block content %}
+<section>
+    <h1>Crear cuenta</h1>
 
-<body>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">
+            Registrarse
+        </button>
+    </form>
 
-    <section>
-
-        <h1>Crear cuenta</h1>
-
-        <form method="post">
-
-            {% csrf_token %}
-
-            {{ form.as_p }}
-
-            <button class="btn btn-primary" type="submit">
-                Registrarse
-            </button>
-
-        </form>
-
-    </section>
-
-</body>
-</html>
+    <p>
+        ¿Ya tienes una cuenta?
+        <a href="{% url 'accounts:login' %}">Iniciar sesión</a>
+    </p>
+</section>
+{% endblock %}

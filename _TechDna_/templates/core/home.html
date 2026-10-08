@@ -1,9 +1,54 @@
 {% extends "base.html" %}
 
-{% block title %}Inicio | Tech DNA{% endblock %}
+{% block title %}Inicio | {{ platform_name|default:"Tech DNA" }}{% endblock %}
 
 {% block content %}
-<h1>Tech DNA</h1>
-<p>Descubre, demuestra y certifica tu nivel técnico con Ducky Academy.</p>
-<a href="/admin/">Panel de Administración</a>
+    <section class="auth-section">
+        <h2>Empieza tu Tech DNA</h2>
+        <p>
+            Crea tu perfil técnico, realiza evaluaciones y obtén
+            certificaciones verificables para demostrar tus habilidades.
+        </p>
+        {% if not user.is_authenticated %}
+            <div class="auth-buttons">
+                <a href="{% url 'accounts:register' %}" class="btn btn-primary">Crear cuenta</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2>Evaluaciones Técnicas Reales</h2>
+        <p>
+            Pon a prueba tus conocimientos mediante retos,
+            evaluaciones y certificaciones verificables.
+        </p>
+    </section>
+
+    <section>
+        <h2>Tecnologías Disponibles</h2>
+        <ul>
+            <li>Python</li>
+            <li>SQL</li>
+            <li>Docker</li>
+            <li>Linux</li>
+            <li>Cloud Computing</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Objetivo</h2>
+        <p>
+            Conoce tus fortalezas, detecta tus debilidades
+            y prepárate para tu próximo puesto tecnológico.
+        </p>
+    </section>
+
+    <section>
+        <h2>Administración</h2>
+        <p>
+            Accede al panel de administración para gestionar
+            usuarios, tecnologías y evaluaciones.
+        </p>
+        <a href="/admin/" class="btn btn-primary">Abrir Panel</a>
+    </section>
 {% endblock %}

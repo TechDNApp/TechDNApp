@@ -1,16 +1,54 @@
-<!doctype html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Tech DNA — Ducky Academy{% endblock %}</title>
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ platform_name|default:"Tech DNA" }}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
     <header>
-      <nav>
-        <a href="{% url 'core:home' %}"><strong>Tech DNA</strong></a>
-      </nav>
+        <h1>Tech DNA</h1>
+        <p>Descubre, demuestra y certifica tu nivel técnico real.</p>
+
+        <nav class="auth-buttons">
+            {% if user.is_authenticated %}
+                <span>Bienvenido, {{ user.username }}!</span>
+                <a href="{% url 'accounts:profile' %}" class="btn">Mi Perfil</a>
+                <!-- Django modern logout via POST -->
+                <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="btn btn-primary">Iniciar sesión</a>
+                <a href="{% url 'accounts:register' %}" class="btn">Crear cuenta</a>
+            {% endif %}
+        </nav>
     </header>
-    <main>{% block content %}{% endblock %}</main>
-  </body>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <p class="alert">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <hr>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>© 2026 {{ academy|default:"Ducky Academy" }}</p>
+    </footer>
+
+</body>
 </html>
