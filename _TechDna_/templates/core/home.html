@@ -11,21 +11,34 @@
 <body>
 
     <header>
-        <h1>Tech DNA</h1>
+        <div class="top-bar">
+
+            <h1>Tech DNA</h1>
+
+            {% if user.is_authenticated %}
+                <a href="/admin" class="btn btn-admin">Administración</a>
+            {% endif %}
+
+        </div>
+
         <p> Descubre, demuestra y certifica tu nivel técnico real. </p>
 
         {% if user.is_authenticated %}
-            <p>Bienvenido, {{ user.username }}!</p>
+            <h2>Bienvenido, {{ user.username }}!</h2>
             <div class="auth-buttons">
                 <form method="post" action="{% url 'accounts:logout' %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Cerrar sesión</button>
+                    <button type="submit" class="btn btn-secondary">Cerrar sesión</button>
                 </form>
             </div>
         {% else %}
             <div class="auth-buttons">
-                <a href="{% url 'accounts:login' %}" class="btn btn-primary">
+                <a href="{% url 'accounts:login' %}" class="btn btn-secondary">
                 Iniciar sesión
+                </a>
+
+                <a href="{% url 'accounts:register' %}" class="btn btn-secondary">
+                Crear cuenta
                 </a>
             </div>
         {% endif %}
@@ -34,24 +47,28 @@
 
     </header>
 
-    <hr>
-
     <main>
 
-        <section class="auth-section">
-            <h2>Empieza tu Tech DNA</h2>
-            
-            <p>
-            Crea tu perfil técnico, realiza evaluaciones y obtén
-            certificaciones verificables para demostrar tus habilidades.
-            </p>
-            
-            <div class="auth-buttons">                
-                <a href="{% url 'accounts:register' %}" class="btn btn-primary">
-                Crear cuenta
-                </a>
-            </div>
-        </section>
+        {% if not user.is_authenticated %}
+
+            <section class="auth-section hero-section">
+
+                    <h2>Empieza tu Tech DNA</h2>
+                    
+                    <p>
+                    Crea tu perfil técnico, realiza evaluaciones y obtén
+                    certificaciones verificables para demostrar tus habilidades.
+                    </p>
+
+                    <div class="cta-container">
+                        <a href="{% url 'accounts:register' %}" class="btn btn-primary cta-btn">
+                        Crear mi perfíl
+                        </a>
+                    </div>
+                
+            </section>
+
+        {% endif %}
 
         <section>
             <h2>Evaluaciones Técnicas Reales</h2>
@@ -83,22 +100,7 @@
             </p>
         </section>
 
-        <section>
-            <h2>Administración</h2>
-            
-            <p>
-            Accede al panel de administración para gestionar
-            usuarios, tecnologías y evaluaciones.
-            </p>
-            
-            <a href="/admin/" class="btn btn-primary">
-            Abrir Panel
-            </a>
-        </section>
-
     </main>
-
-    <hr>
 
     <footer>
         <p>

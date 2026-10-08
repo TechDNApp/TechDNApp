@@ -11,23 +11,27 @@
 
 <body>
 
-    <section>
+    <div class="auth-page">
 
-        <h1>Crear cuenta</h1>
+        <section>
 
-        <form method="post">
+            <h1>Crear cuenta</h1>
 
-            {% csrf_token %}
+            <form method="post">
 
-            {{ form.as_p }}
+                {% csrf_token %}
 
-            <button class="btn btn-primary" type="submit">
-                Registrarse
-            </button>
+                {{ form.as_p }}
 
-        </form>
+                <button class="btn btn-primary" type="submit">
+                    Registrarse
+                </button>
 
-    </section>
+            </form>
+
+        </section>
+
+    </div>
 
 </body>
 </html>
