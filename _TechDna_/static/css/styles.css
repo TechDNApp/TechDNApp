@@ -370,7 +370,6 @@ input:focus {
 }
 
 label {
-
     font-weight: 600;
 }
 
@@ -379,16 +378,9 @@ label {
 ================================== */
 
 .auth-page {
-
-    min-height: 100vh;
-
     display: flex;
-
     justify-content: center;
-
-    align-items: center;
-
-    padding: 2rem;
+    align-items: flex-start;
 }
 
 .auth-page section {
