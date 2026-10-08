@@ -4,22 +4,22 @@
 
 {% if not user.is_authenticated %}
 
-    <section class="auth-section hero-section">
+<section class="auth-section hero-section">
 
-            <h2>Empieza tu Tech DNA</h2>
-            
-            <p>
-            Crea tu perfil técnico, realiza evaluaciones y obtén
-            certificaciones verificables para demostrar tus habilidades.
-            </p>
-
-            <div class="cta-container">
-                <a href="{% url 'accounts:register' %}" class="btn btn-primary cta-btn">
-                Crear mi perfíl
-                </a>
-            </div>
+        <h2>Empieza tu Tech DNA</h2>
         
-    </section>
+        <p>
+        Crea tu perfil técnico, realiza evaluaciones y obtén
+        certificaciones verificables para demostrar tus habilidades.
+        </p>
+
+        <div class="cta-container">
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary cta-btn">
+            Crear mi perfíl
+            </a>
+        </div>
+    
+</section>
 
 {% endif %}
 

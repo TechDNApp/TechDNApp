@@ -3,38 +3,18 @@
 {% block title %}Crear cuenta | Tech DNA{% endblock %}
 
 {% block content %}
-<section>
-    <h1>Crear cuenta</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="btn btn-primary" type="submit">
-            Registrarse
-        </button>
-    </form>
+<div class="auth-page">
+    <section>
+        <h1>Crear cuenta</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary" type="submit">
+                Registrarse
+            </button>
+        </form>
+    </section>
+</div>
 
-    <div class="auth-page">
-
-        <section>
-
-            <h1>Crear cuenta</h1>
-
-            <form method="post">
-
-                {% csrf_token %}
-                
-                {{ form.as_p }}
-
-                <button class="btn btn-primary" type="submit">
-                    Registrarse
-                </button>
-
-            </form>
-
-        </section>
-
-    </div>
-
-</body>
-</html>
+{% endblock %}

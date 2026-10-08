@@ -3,31 +3,19 @@
 {% block title %}Iniciar sesión | Tech DNA{% endblock %}
 
 {% block content %}
-<section class="auth-card">
-    <h2>Iniciar sesión</h2>
 
-<body>
-    <div class="auth-page">
+<div class="auth-page">
+    <section>
+        <h1>Iniciar sesión</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary" type="submit">
+                Acceder
+            </button>
+        </form>
+    </section>
+    
+</div>
 
-        <section>
-
-            <h1>Iniciar sesión</h1>
-
-            <form method="post">
-
-                {% csrf_token %}
-
-                {{ form.as_p }}
-
-                <button class="btn btn-primary" type="submit">
-                    Acceder
-                </button>
-
-            </form>
-
-        </section>
-        
-    </div>
-
-</body>
-</html>
+{% endblock %}
