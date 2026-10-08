@@ -11,16 +11,19 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-vr+*2uvvb&r6%m=8b_jk8u+v_7ge69-0mvd=y5=c^jt*+^oim9"
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-dev-fallback-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,18 +33,25 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "core",
-    "accounts",
-    "skills",
-    "assessments",
-]
+DJANGO_APPS = [
+         "django.contrib.admin",
+         "django.contrib.auth",
+         "django.contrib.contenttypes",
+         "django.contrib.sessions",
+         "django.contrib.messages",
+         "django.contrib.staticfiles",
+     ]
+
+THIRD_PARTY_APPS = []
+
+LOCAL_APPS = [
+         "core",
+         "accounts",
+         "skills",
+         "assessments",
+     ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -62,6 +72,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -69,6 +80,33 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+LOGGING = {
+         "version": 1,
+         "disable_existing_loggers": False,
+         "formatters": {
+             "verbose": {
+                 "format": "{levelname} {asctime} [{name}] {message}",
+                 "style": "{",
+             },
+         },
+         "handlers": {
+             "console": {
+                 "class": "logging.StreamHandler",
+                 "formatter": "verbose",
+             },
+         },
+         "root": {
+             "handlers": ["console"],
+             "level": "INFO",
+         },
+     }
 
 WSGI_APPLICATION = "techDna.wsgi.application"
 
@@ -137,3 +175,5 @@ MAILERS = {
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/accounts/login/"
+
+AUTH_USER_MODEL = "accounts.User"

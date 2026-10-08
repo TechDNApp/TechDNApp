@@ -1,0 +1,480 @@
+/* ==================================
+   VARIABLES
+================================== */
+
+:root {
+
+    /* Marca */
+
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+
+    /* Oscuros */
+
+    --color-dark: #0f172a;
+    --color-dark-secondary: #1e293b;
+
+    /* Fondos */
+
+    --color-background: #edf2f7;
+    --color-card: #f6f8fb;
+    --color-card-hover: #f1f5f9;
+
+    /* Texto */
+
+    --color-text: #111827;
+    --color-text-muted: #64748b;
+
+    /* Bordes */
+
+    --color-border: #dbe3ee;
+    --color-border-hover: #c5d2e6;
+
+    /* Sombras */
+
+    --shadow-card:
+        0 8px 25px rgba(15,23,42,.05);
+
+    --shadow-card-hover:
+        0 15px 35px rgba(15,23,42,.08);
+
+    --shadow-focus:
+        0 0 0 4px rgba(37,99,235,.15);
+
+    /* Header */
+
+    --gradient-brand:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #1e293b,
+            #2563eb
+        );
+}
+
+/* ==================================
+   RESET
+================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ==================================
+   BASE
+================================== */
+
+body {
+
+    font-family: "Segoe UI", sans-serif;
+
+    background: var(--color-background);
+
+    color: var(--color-text);
+
+    line-height: 1.6;
+}
+
+/* ==================================
+   HEADER
+================================== */
+
+header {
+
+    background: var(--gradient-brand);
+
+    color: white;
+
+    text-align: center;
+
+    padding: 2rem 1rem 5rem;
+}
+
+.top-bar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    max-width: 1200px;
+
+    margin: 0 auto 3rem auto;
+}
+
+header h1 {
+
+    font-size: 4rem;
+
+    font-weight: 700;
+
+    letter-spacing: -2px;
+}
+
+header p {
+
+    max-width: 700px;
+
+    margin: 0 auto;
+
+    font-size: 1.2rem;
+
+    opacity: .9;
+}
+
+header h2 {
+
+    margin-top: 2rem;
+}
+
+/* ==================================
+   MAIN
+================================== */
+
+main {
+
+    max-width: 1200px;
+
+    margin: -2rem auto 3rem auto;
+
+    padding: 0 1rem;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(320px, 1fr));
+
+    gap: 1.5rem;
+}
+
+/* ==================================
+   TARJETAS
+================================== */
+
+section {
+
+    background: var(--color-card);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: 18px;
+
+    padding: 2rem;
+
+    box-shadow: var(--shadow-card);
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        border-color .3s ease;
+}
+
+section:hover {
+
+    transform: translateY(-4px);
+
+    border-color: var(--color-border-hover);
+
+    box-shadow: var(--shadow-card-hover);
+
+    background: var(--color-card-hover);
+}
+
+section h2 {
+
+    color: var(--color-dark-secondary);
+
+    margin-bottom: 1rem;
+
+    font-weight: 700;
+}
+
+section p {
+
+    color: var(--color-text);
+}
+
+/* ==================================
+   HERO SECTION
+================================== */
+
+.hero-section {
+
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #eef4ff
+        );
+}
+
+.hero-section p {
+
+    max-width: 700px;
+
+    margin: 0 auto;
+}
+
+/* CTA */
+
+.cta-container {
+
+    padding-top: 2px;
+
+    max-height: 0;
+
+    opacity: 0;
+
+    overflow: hidden;
+
+    transition:
+        max-height .3s ease,
+        opacity .3s ease,
+        margin-top .3s ease;
+}
+
+.hero-section:hover .cta-container {
+
+    max-height: 120px;
+
+    opacity: 1;
+
+    margin-top: 1.5rem;
+}
+
+/* ==================================
+   LISTA TECNOLOGÍAS
+================================== */
+
+ul {
+    list-style: none;
+}
+
+li {
+    background: #eef4ff;
+    border-left: 10px solid var(--color-dark-secondary);
+    padding: .9rem 1rem;
+    margin-bottom: .8rem;
+    border-radius: 10px;
+    transition: .2s ease;
+}
+
+li:hover {
+    transform: translateX(4px);
+}
+
+/* ==================================
+   BOTONES
+================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .95rem 1.8rem;
+    border-radius: 12px;
+    border: none;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .25s ease;
+}
+
+/* Primario */
+
+.btn-primary {
+    background: var(--gradient-brand);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+}
+
+/* Secundario */
+
+.btn-secondary {
+
+    background: var(--color-card);
+
+    color: var(--color-text);
+
+    border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+
+    background: white;
+
+    border-color: var(--color-primary);
+
+    transform: translateY(-2px);
+}
+
+/* Administración */
+
+.btn-admin {
+
+    background: rgba(255,255,255,.08);
+
+    color: white;
+
+    border: 1px solid rgba(255,255,255,.15);
+
+    backdrop-filter: blur(10px);
+}
+
+.btn-admin:hover {
+
+    background: rgba(255,255,255,.15);
+
+    transform: translateY(-2px);
+}
+
+/* ==================================
+   INPUTS
+================================== */
+
+input {
+
+    width: 100%;
+
+    padding: .9rem 1rem;
+
+    margin-top: .3rem;
+    margin-bottom: 1rem;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: 10px;
+
+    background: white;
+
+    font-size: 1rem;
+}
+
+input:focus {
+
+    outline: none;
+
+    border-color: var(--color-primary);
+
+    box-shadow: var(--shadow-focus);
+}
+
+label {
+    font-weight: 600;
+}
+
+/* ==================================
+   AUTH
+================================== */
+
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.auth-page section {
+
+    width: 100%;
+
+    max-width: 550px;
+}
+
+.auth-section {
+
+    text-align: center;
+}
+
+.auth-buttons {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 1rem;
+
+    flex-wrap: wrap;
+
+    margin-top: 1.8rem;
+}
+
+.auth-buttons form {
+
+    margin: 0;
+}
+
+.auth-page ul li {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 2px 0;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.auth-page .errorlist li {
+    background: #ffebee;
+    border-left: 8px solid #e53935;
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-radius: 6px;
+    color: #c62828;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* ==================================
+   FOOTER
+================================== */
+
+footer {
+
+    background: var(--color-dark);
+
+    color: white;
+
+    text-align: center;
+
+    padding: 2rem;
+
+    margin-top: 4rem;
+}
+
+/* ==================================
+   RESPONSIVE
+================================== */
+
+@media (max-width: 768px) {
+
+    .top-bar {
+
+        flex-direction: column;
+
+        gap: 1.5rem;
+    }
+
+    header h1 {
+
+        font-size: 2.8rem;
+    }
+
+    header p {
+
+        font-size: 1rem;
+    }
+
+    main {
+
+        margin-top: 2rem;
+    }
+}

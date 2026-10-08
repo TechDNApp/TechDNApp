@@ -1,36 +1,21 @@
-{% load static %}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Iniciar sesión</title>
+{% block title %}Iniciar sesión | Tech DNA{% endblock %}
 
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
+{% block content %}
 
-<body>
-    <div class="auth-page">
+<div class="auth-page">
+    <section>
+        <h1>Iniciar sesión</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary" type="submit">
+                Acceder
+            </button>
+        </form>
+    </section>
+    
+</div>
 
-        <section>
-
-            <h1>Iniciar sesión</h1>
-
-            <form method="post">
-
-                {% csrf_token %}
-
-                {{ form.as_p }}
-
-                <button class="btn btn-primary" type="submit">
-                    Acceder
-                </button>
-
-            </form>
-
-        </section>
-        
-    </div>
-
-</body>
-</html>
+{% endblock %}
