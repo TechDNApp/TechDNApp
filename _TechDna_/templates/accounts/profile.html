@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil | Tech DNA{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <section>
+        <h2>Perfil Técnico</h2>
+
+        <div class="profile-avatar-container">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="Avatar de {{ user.username }}" class="profile-avatar">
+            {% else %}
+                <div class="profile-avatar-placeholder">
+                    {{ user.first_name|default:user.username|make_list|first|upper }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-data-list">
+            <div class="profile-data-item">
+                <span class="profile-data-label">Usuario</span>
+                <span class="profile-data-value">{{ user.username }}</span>
+            </div>
+
+            <div class="profile-data-item">
+                <span class="profile-data-label">Nombre</span>
+                <span class="profile-data-value">{{ user.get_full_name|default:"No especificado" }}</span>
+            </div>
+
+            <div class="profile-data-item">
+                <span class="profile-data-label">Email</span>
+                <span class="profile-data-value">{{ user.email }}</span>
+            </div>
+
+            <div class="profile-data-item">
+                <span class="profile-data-label">Rol</span>
+                <span class="profile-data-value">{{ user.get_role_display }}</span>
+            </div>
+
+            <div class="profile-data-item">
+                <span class="profile-data-label">Track Principal</span>
+                <span class="profile-data-value">{{ user.get_primary_track_display }}</span>
+            </div>
+
+            {% if user.city %}
+            <div class="profile-data-item">
+                <span class="profile-data-label">Ciudad</span>
+                <span class="profile-data-value">{{ user.city }}</span>
+            </div>
+            {% endif %}
+
+            {% if user.github_url %}
+            <div class="profile-data-item">
+                <span class="profile-data-label">GitHub</span>
+                <span class="profile-data-value">
+                    <a href="{{ user.github_url }}" target="_blank" rel="noopener noreferrer">Ver GitHub</a>
+                </span>
+            </div>
+            {% endif %}
+
+            {% if user.linkedin_url %}
+            <div class="profile-data-item">
+                <span class="profile-data-label">LinkedIn</span>
+                <span class="profile-data-value">
+                    <a href="{{ user.linkedin_url }}" target="_blank" rel="noopener noreferrer">Ver LinkedIn</a>
+                </span>
+            </div>
+            {% endif %}
+
+            {% if user.bio %}
+            <div class="profile-data-item" style="flex-direction: column; align-items: flex-start; gap: 0.3rem;">
+                <span class="profile-data-label">Biografía</span>
+                <span class="profile-data-value" style="text-align: left;">{{ user.bio }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-actions">
+            <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary">Editar Perfil</a>
+        </div>
+    </section>
+</div>
+{% endblock %}
