@@ -149,7 +149,7 @@ python manage.py test accounts
 | :--- | :--- | :--- | :--- |
 | **Angelo** | Full Stack Developer | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
 | **Maite** | Full Stack Developer | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
-| **Mio** | Full Stack Developer | [github](https://github.com/miaryl) | [linkedin](https://linkedin.com/in/mio-ogura) |
+| **Mio** | Sprint1 Scrum Master & Dev | [github](https://github.com/miaryl) | [linkedin](https://linkedin.com/in/mio-ogura) |
 
 
 
