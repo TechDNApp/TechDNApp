@@ -72,10 +72,9 @@ class AccountsAuthTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(User.objects.filter(username="another_user").exists())
         self.assertFormError(
-            response,
-            "form",
+            response.context["form"],
             "email",
-            "Ya existe una cuenta con este correo electrónico.",
+            ["Ya existe una cuenta con este correo electrónico."],
         )
 
     def test_login_success(self):
