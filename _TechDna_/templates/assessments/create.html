@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="auth-page">
+    <section>
+        <h1>
+            {% if object %}
+                Editar evaluación
+            {% else %}
+                Crear evaluación
+            {% endif %}
+        </h1>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit">
+                Guardar
+            </button>
+
+        </form>
+    </section>
+</div>
+
+{% endblock %}
