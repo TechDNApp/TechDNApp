@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="auth-page">
+    <section>
+
+        {% if assessment %}
+            <p>¿Estás seguro de que quieres eliminar la evaluación "<strong>{{ assessment.title }}</strong>"?</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit">Eliminar</button>
+        {% endif %}
+
+    </section>
+</div>
+
+{% endblock %}
