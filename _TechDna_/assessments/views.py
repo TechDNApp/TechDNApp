@@ -3,11 +3,13 @@ from django.contrib.auth.mixins import (
     UserPassesTestMixin,
 )
 
+from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
     UpdateView,
+    DeleteView,
 )
 
 from .forms import AssessmentForm
@@ -39,6 +41,18 @@ class AssessmentUpdateView(
     model = Assessment
     form_class = AssessmentForm
     template_name = "assessments/create.html"
+    def test_func(self):
+        assessment = self.get_object()
+        return assessment.owner == self.request.user
+
+class AssessmentDeleteView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    DeleteView
+):
+    model = Assessment
+    template_name = "assessments/confirm_delete.html"
+    success_url = reverse_lazy("assessments:list")
     def test_func(self):
         assessment = self.get_object()
         return assessment.owner == self.request.user
