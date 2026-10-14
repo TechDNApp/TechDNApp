@@ -2,6 +2,8 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
+from django.urls import reverse
 
 
 # ejemplos: Python Backend Junior, SQL Fundamentals, Linux Essentials
@@ -30,10 +32,31 @@ class Assessment(models.Model):
     )
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    slug = models.SlugField(
+        unique=True,
+        blank=True
+    )
+    
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
     class Meta:
         ordering = ["-created_at"]
-
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+    
+    def get_absolute_url(self):
+        return reverse(
+            "assessments:detail",
+            kwargs={"slug": self.slug}
+        )
+    
     def __str__(self):
         return self.title
 

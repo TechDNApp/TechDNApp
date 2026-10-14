@@ -1,6 +1,12 @@
 from django.contrib import admin
 from .models import Category
 
+from .models import (
+    Category,
+    Technology,
+    Role,
+    Skill,
+)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -13,3 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = (
         "name",
     )
+    
+admin.site.register(Technology)
+admin.site.register(Role)
+admin.site.register(Skill)

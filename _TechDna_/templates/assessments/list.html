@@ -1,0 +1,25 @@
+<h1>Evaluaciones</h1>
+
+{% url 'assessments:create' %}
+    Nueva evaluación
+</a>
+
+{% for assessment in assessments %}
+
+<div>
+
+    <h2>{{ assessment.title }}</h2>
+
+    <p>{{ assessment.description }}</p>
+
+    {% url 'assessments:detail' assessment.slug %}
+        Ver detalle
+    </a>
+
+</div>
+
+{% empty %}
+
+<p>No hay evaluaciones.</p>
+
+{% endfor %}
