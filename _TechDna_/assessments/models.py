@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
-from django.urls import reverse
 
 
 # ejemplos: Python Backend Junior, SQL Fundamentals, Linux Essentials
@@ -32,7 +32,7 @@ class Assessment(models.Model):
     )
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     # El slug NO es único: puede haber dos "Python Backend Junior".
     # El identificador fiable es el pk; el slug sólo hace la URL legible:
     # /assessments/24/python-backend-junior/
@@ -46,6 +46,9 @@ class Assessment(models.Model):
         on_delete=models.CASCADE,
         related_name="owned_assessments",
     )
+
+    # Sesión 6: contador de visitas (se incrementa con F() en el detalle).
+    views_count = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ["-created_at"]
@@ -66,9 +69,75 @@ class Assessment(models.Model):
                 "slug": self.slug,
             },
         )
-    
+
+    @property
+    def primary_image(self):
+        """
+        Imagen principal de la evaluación (o None).
+
+        Usa self.images.all() en lugar de .filter() para aprovechar el
+        prefetch_related("images") de las vistas y evitar el problema N+1.
+        """
+        images = list(self.images.all())
+        for image in images:
+            if image.is_primary:
+                return image
+        return images[0] if images else None
+
     def __str__(self):
         return self.title
+
+
+class AssessmentImage(models.Model):
+    """Imágenes de una evaluación: portada, diagramas, capturas de código..."""
+
+    assessment = models.ForeignKey(
+        Assessment,
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
+    image = models.ImageField(upload_to="assessments/")
+    is_primary = models.BooleanField(default=False)
+    position = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["position", "id"]
+
+    def __str__(self):
+        return f"Imagen {self.position} de {self.assessment}"
+
+
+class Favorite(models.Model):
+    """
+    Modelo intermedio usuario <-> evaluación (Many-to-Many conceptual).
+    Usamos un modelo propio en vez de ManyToManyField para guardar la fecha.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="favorites",
+    )
+    assessment = models.ForeignKey(
+        Assessment,
+        on_delete=models.CASCADE,
+        related_name="favorites",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            # Un usuario sólo puede guardar una vez la misma evaluación.
+            models.UniqueConstraint(
+                fields=["user", "assessment"],
+                name="unique_user_assessment_favorite",
+            ),
+        ]
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user} - {self.assessment}"
 
 
 class Question(models.Model):
