@@ -1,43 +1,51 @@
 from django.urls import path
 
-from .views import (
-    AssessmentListView,
-    AssessmentDetailView,
-    AssessmentCreateView,
-    AssessmentUpdateView,
-    AssessmentDeleteView,
-)
+from . import views
 
 app_name = "assessments"
 
+# IMPORTANTE: el detalle <int:pk>/<slug:slug>/ va el ÚLTIMO.
+# Si estuviera antes, "/assessments/5/edit/" encajaría con él (slug="edit")
+# y se mostraría el detalle en lugar de la edición, saltándose el 403.
 urlpatterns = [
     path(
         "",
-        AssessmentListView.as_view(),
-        name="list"
+        views.AssessmentListView.as_view(),
+        name="list",
     ),
-
     path(
         "create/",
-        AssessmentCreateView.as_view(),
-        name="create"
+        views.AssessmentCreateView.as_view(),
+        name="create",
     ),
-
     path(
-        "<slug:slug>/",
-        AssessmentDetailView.as_view(),
-        name="detail"
+        "mine/",
+        views.MyAssessmentListView.as_view(),
+        name="mine",
     ),
-
     path(
-        "<slug:slug>/edit/",
-        AssessmentUpdateView.as_view(),
-        name="update"
+        "technology/<slug:slug>/",
+        views.AssessmentByTechnologyListView.as_view(),
+        name="by_technology",
     ),
-    
     path(
-        "<slug:slug>/delete/",
-        AssessmentDeleteView.as_view(),
-        name="delete"
-    )
+        "user/<str:username>/",
+        views.OwnerAssessmentListView.as_view(),
+        name="by_owner",
+    ),
+    path(
+        "<int:pk>/edit/",
+        views.AssessmentUpdateView.as_view(),
+        name="update",
+    ),
+    path(
+        "<int:pk>/delete/",
+        views.AssessmentDeleteView.as_view(),
+        name="delete",
+    ),
+    path(
+        "<int:pk>/<slug:slug>/",
+        views.AssessmentDetailView.as_view(),
+        name="detail",
+    ),
 ]

@@ -33,28 +33,38 @@ class Assessment(models.Model):
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    # El slug NO es único: puede haber dos "Python Backend Junior".
+    # El identificador fiable es el pk; el slug sólo hace la URL legible:
+    # /assessments/24/python-backend-junior/
     slug = models.SlugField(
-        unique=True,
-        blank=True
+        max_length=220,
+        blank=True,
     )
-    
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="owned_assessments",
     )
 
     class Meta:
         ordering = ["-created_at"]
-    
+
     def save(self, *args, **kwargs):
+        # Política: el slug se genera una sola vez. Si luego cambia el título,
+        # se mantiene el slug antiguo para no romper URLs ya compartidas.
         if not self.slug:
-            self.slug = slugify(self.title)
+            # "or": un título sólo con símbolos daría slug vacío y rompería la URL.
+            self.slug = slugify(self.title) or "evaluacion"
         super().save(*args, **kwargs)
-    
+
     def get_absolute_url(self):
         return reverse(
             "assessments:detail",
-            kwargs={"slug": self.slug}
+            kwargs={
+                "pk": self.pk,
+                "slug": self.slug,
+            },
         )
     
     def __str__(self):

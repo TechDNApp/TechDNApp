@@ -1,0 +1,36 @@
+<article class="card">
+    <div>
+        <div class="badges">
+            {% include "assessments/_badges.html" %}
+        </div>
+
+        <h2>
+            <a href="{{ assessment.get_absolute_url }}">{{ assessment.title }}</a>
+        </h2>
+
+        <p>{{ assessment.description|truncatewords:20 }}</p>
+
+        <p class="meta">
+            <a href="{% url 'assessments:by_technology' assessment.technology.slug %}">{{ assessment.technology }}</a>
+            · {{ assessment.role }}
+            {% if show_owner is not False %}
+                · por <a href="{% url 'assessments:by_owner' assessment.owner.username %}">{{ assessment.owner.username }}</a>
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="card-actions">
+        <a href="{{ assessment.get_absolute_url }}" class="btn btn-secondary btn-sm">
+            Ver detalle
+        </a>
+
+        {% if user == assessment.owner %}
+            <a href="{% url 'assessments:update' assessment.pk %}" class="btn btn-warning btn-sm">
+                Editar
+            </a>
+            <a href="{% url 'assessments:delete' assessment.pk %}" class="btn btn-danger btn-sm">
+                Eliminar
+            </a>
+        {% endif %}
+    </div>
+</article>
