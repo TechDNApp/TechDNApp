@@ -1,9 +1,56 @@
-<h1>{{ assessment.title }}</h1>
+{% extends "base.html" %}
 
-<p>{{ assessment.description }}</p>
+{% block title %}{{ assessment.title }} | Tech DNA{% endblock %}
 
-<p>Tecnología: {{ assessment.technology }}</p>
+{% block content %}
+<section class="page-section">
 
-<p>Rol: {{ assessment.role }}</p>
+    <div class="badges">
+        {% include "assessments/_badges.html" %}
+    </div>
 
-<p>Modo: {{ assessment.get_mode_display }}</p>
+    <h1>{{ assessment.title }}</h1>
+
+    {# Ejercicio 3: "Publicado hace..." #}
+    <p class="meta">
+        Publicada hace {{ assessment.created_at|timesince }}
+        por <a href="{% url 'assessments:by_owner' assessment.owner.username %}">{{ assessment.owner.username }}</a>
+    </p>
+
+    <dl class="detail-list">
+        <dt>Tecnología</dt>
+        <dd>
+            <a href="{% url 'assessments:by_technology' assessment.technology.slug %}">{{ assessment.technology }}</a>
+        </dd>
+
+        <dt>Rol</dt>
+        <dd>{{ assessment.role }}</dd>
+
+        <dt>Modo</dt>
+        <dd>{{ assessment.get_mode_display }}</dd>
+
+        <dt>Preguntas</dt>
+        <dd>{{ assessment.questions.all|length }}</dd>
+    </dl>
+
+    <h2>Descripción</h2>
+    <p>{{ assessment.description|linebreaksbr }}</p>
+
+    <div class="card-actions detail-actions">
+        <a href="{% url 'assessments:list' %}" class="btn btn-secondary btn-sm">
+            ← Volver al listado
+        </a>
+
+        {# Sólo oculta los botones; la protección real está en las vistas (403). #}
+        {% if user == assessment.owner %}
+            <a href="{% url 'assessments:update' assessment.pk %}" class="btn btn-warning btn-sm">
+                Editar evaluación
+            </a>
+            <a href="{% url 'assessments:delete' assessment.pk %}" class="btn btn-danger btn-sm">
+                Eliminar evaluación
+            </a>
+        {% endif %}
+    </div>
+
+</section>
+{% endblock %}

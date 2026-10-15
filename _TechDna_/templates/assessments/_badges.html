@@ -1,0 +1,7 @@
+{# Ejercicio 4: etiqueta visual según el estado / modo #}
+<span class="badge badge-{{ assessment.mode }}">{{ assessment.get_mode_display }}</span>
+{% if assessment.active %}
+    <span class="badge badge-active">Activa</span>
+{% else %}
+    <span class="badge badge-inactive">Inactiva</span>
+{% endif %}

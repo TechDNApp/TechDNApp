@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Mis evaluaciones | Tech DNA{% endblock %}
+
+{% block content %}
+<section class="page-section">
+
+    <div class="section-header">
+        <h1>Mis evaluaciones</h1>
+
+        <a href="{% url 'assessments:create' %}" class="btn btn-primary btn-sm">
+            + Publicar nueva evaluación
+        </a>
+    </div>
+
+    {% if assessments %}
+        <div class="cards-grid">
+            {% for assessment in assessments %}
+                {% include "assessments/_card.html" with show_owner=False %}
+            {% endfor %}
+        </div>
+
+        {% include "includes/pagination.html" %}
+    {% else %}
+        <p>Todavía no has publicado evaluaciones.</p>
+    {% endif %}
+
+</section>
+{% endblock %}
