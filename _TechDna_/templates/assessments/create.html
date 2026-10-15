@@ -1,29 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section class="auth-section">
+    <h2>{% if object %}Editar prueba{% else %}Crear prueba{% endif %}</h2>
 
-<div class="auth-page">
-    <section>
-        <h1>
-            {% if object %}
-                Editar evaluación
-            {% else %}
-                Crear evaluación
-            {% endif %}
-        </h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
 
-        <form method="post">
-
-            {% csrf_token %}
-
-            {{ form.as_p }}
-
-            <button type="submit">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
                 Guardar
             </button>
-
-        </form>
-    </section>
-</div>
-
+            <a href="{% url 'core:home' %}" class="btn btn-secondary">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</section>
 {% endblock %}

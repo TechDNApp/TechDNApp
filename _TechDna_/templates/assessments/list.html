@@ -1,25 +1,44 @@
-<h1>Evaluaciones</h1>
+{% extends "base.html" %}
 
-{% url 'assessments:create' %}
-    Nueva evaluación
-</a>
+{% block content %}
+<section class="assessments-section">
+    <div class="section-header">
+        <h1>Evaluaciones</h1>
+        {% if user.is_authenticated %}
+            <a href="{% url 'assessments:create' %}" class="btn btn-primary">
+                + Nueva evaluación
+            </a>
+        {% endif %}
+    </div>
 
-{% for assessment in assessments %}
+    {% if assessments %}
+        <div class="cards-grid">
+            {% for assessment in assessments %}
+                <article class="card">
+                    <h2>{{ assessment.title }}</h2>
+                    <p>{{ assessment.description|truncatewords:20 }}</p>
 
-<div>
+                    <div class="card-actions">
+                        <!-- Botón <Ver detalle> -->
+                        <a href="{% url 'assessments:detail' assessment.slug %}" class="btn btn-secondary btn-sm">
+                            Ver detalle
+                        </a>
 
-    <h2>{{ assessment.title }}</h2>
-
-    <p>{{ assessment.description }}</p>
-
-    {% url 'assessments:detail' assessment.slug %}
-        Ver detalle
-    </a>
-
-</div>
-
-{% empty %}
-
-<p>No hay evaluaciones.</p>
-
-{% endfor %}
+                        <!-- Botones solo para el propietario -->
+                        {% if user == assessment.owner %}
+                            <a href="{% url 'assessments:update' assessment.slug %}" class="btn btn-warning btn-sm">
+                                Editar
+                            </a>
+                            <a href="{% url 'assessments:delete' assessment.slug %}" class="btn btn-danger btn-sm">
+                                Eliminar
+                            </a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No hay evaluaciones disponibles en este momento.</p>
+    {% endif %}
+</section>
+{% endblock %}
