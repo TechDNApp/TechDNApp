@@ -1,37 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}{{ page_title|default:"Evaluaciones" }} | Tech DNA{% endblock %}
-
 {% block content %}
-<section class="page-section">
-
+<section class="assessments-section">
     <div class="section-header">
-        <h1>{{ page_title|default:"Evaluaciones" }}</h1>
-
+        <h1>Evaluaciones</h1>
         {% if user.is_authenticated %}
-            <a href="{% url 'assessments:create' %}" class="btn btn-primary btn-sm">
+            <a href="{% url 'assessments:create' %}" class="btn btn-primary">
                 + Nueva evaluación
             </a>
         {% endif %}
     </div>
 
-    {% if page_title %}
-        <p class="meta">
-            <a href="{% url 'assessments:list' %}">← Ver todas las evaluaciones</a>
-        </p>
-    {% endif %}
-
     {% if assessments %}
         <div class="cards-grid">
             {% for assessment in assessments %}
-                {% include "assessments/_card.html" %}
+                <article class="card">
+                    <h2>{{ assessment.title }}</h2>
+                    <p>{{ assessment.description|truncatewords:20 }}</p>
+
+                    <div class="card-actions">
+                        <!-- Botón <Ver detalle> -->
+                        <a href="{% url 'assessments:detail' assessment.slug %}" class="btn btn-secondary btn-sm">
+                            Ver detalle
+                        </a>
+
+                        <!-- Botones solo para el propietario -->
+                        {% if user == assessment.owner %}
+                            <a href="{% url 'assessments:update' assessment.slug %}" class="btn btn-warning btn-sm">
+                                Editar
+                            </a>
+                            <a href="{% url 'assessments:delete' assessment.slug %}" class="btn btn-danger btn-sm">
+                                Eliminar
+                            </a>
+                        {% endif %}
+                    </div>
+                </article>
             {% endfor %}
         </div>
-
-        {% include "includes/pagination.html" %}
     {% else %}
-        <p>Todavía no hay evaluaciones publicadas.</p>
+        <p>No hay evaluaciones disponibles en este momento.</p>
     {% endif %}
-
 </section>
 {% endblock %}

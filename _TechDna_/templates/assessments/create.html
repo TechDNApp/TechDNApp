@@ -1,36 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}{% if object %}Editar evaluación{% else %}Publicar evaluación{% endif %} | Tech DNA{% endblock %}
-
 {% block content %}
-{# Se reutiliza para crear (CreateView) y editar (UpdateView) #}
-<div class="auth-page page-section">
-    <section>
-        <h1>
-            {% if object %}
-                Editar evaluación
-            {% else %}
-                Publicar evaluación
-            {% endif %}
-        </h1>
+<section class="auth-section">
+    <h2>{% if object %}Editar prueba{% else %}Crear prueba{% endif %}</h2>
 
-        <form method="post">
-            {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
 
-            {{ form.as_p }}
-
-            <div class="card-actions">
-                <button type="submit" class="btn btn-primary">
-                    Guardar evaluación
-                </button>
-
-                {% if object %}
-                    <a href="{{ object.get_absolute_url }}" class="btn btn-secondary">Cancelar</a>
-                {% else %}
-                    <a href="{% url 'assessments:list' %}" class="btn btn-secondary">Cancelar</a>
-                {% endif %}
-            </div>
-        </form>
-    </section>
-</div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                Guardar
+            </button>
+            <a href="{% url 'core:home' %}" class="btn btn-secondary">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</section>
 {% endblock %}
