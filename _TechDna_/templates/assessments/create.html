@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}{% if object %}Editar prueba{% else %}Crear prueba{% endif %} | Tech DNA{% endblock %}
+
 {% block content %}
+{# Se reutiliza para crear (CreateView) y editar (UpdateView) #}
 <section class="auth-section">
     <h2>{% if object %}Editar prueba{% else %}Crear prueba{% endif %}</h2>
 
@@ -12,9 +15,12 @@
             <button type="submit" class="btn btn-primary">
                 Guardar
             </button>
-            <a href="{% url 'core:home' %}" class="btn btn-secondary">
-                Cancelar
-            </a>
+
+            {% if object %}
+                <a href="{{ object.get_absolute_url }}" class="btn btn-secondary">Cancelar</a>
+            {% else %}
+                <a href="{% url 'assessments:list' %}" class="btn btn-secondary">Cancelar</a>
+            {% endif %}
         </div>
     </form>
 </section>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ platform_name }}</title>
+    <title>{% block title %}{{ platform_name|default:"Tech DNA" }}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 
@@ -16,6 +16,19 @@
             <a href="{% url 'core:home' %}" class="logo">
                 <h1>Tech DNA</h1>
             </a>
+
+            <!-- CENTRO: navegación de evaluaciones (Sesión 5) -->
+            <nav class="main-nav">
+                <a href="{% url 'assessments:list' %}" class="btn btn-admin">
+                    Evaluaciones
+                </a>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'assessments:mine' %}" class="btn btn-admin">
+                        Mis evaluaciones
+                    </a>
+                {% endif %}
+            </nav>
 
             <!-- DERECHA: Botones de administración, perfil y cierre de sesión -->
             <div class="top-bar-actions">
@@ -63,6 +76,15 @@
     </header>
 
     <main class="container">
+        {# Mensajes de éxito/error (messages.success, messages.error...) #}
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message message-{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </main>

@@ -527,6 +527,45 @@ label {
     flex-wrap: wrap;
 }
 
+/* ==================================
+   FOOTER
+================================== */
+
+footer {
+    background: var(--color-dark);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 4rem;
+}
+
+/* ==================================
+   RESPONSIVE
+================================== */
+
+@media (max-width: 768px) {
+    .top-bar {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .logo h1 {
+        font-size: 2.8rem;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    main,
+    main.container {
+        margin-top: 2rem;
+    }
+}
+/* ==================================
+   SESIÓN 5 — CRUD DE EVALUACIONES
+================================== */
+
 /* Ocupa todo el ancho del grid de <main> */
 .page-section,
 .messages {
@@ -713,36 +752,10 @@ label {
     margin-top: 2rem;
 }
 
-/* ==================================
-   FOOTER
-
-footer {
-    background: var(--color-dark);
-    color: white;
-    text-align: center;
-    padding: 2rem;
-    margin-top: 4rem;
+.messages {
+    margin-bottom: 1.5rem;
 }
 
-/* ==================================
-   RESPONSIVE
-
-@media (max-width: 768px) {
-    .top-bar {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .logo h1 {
-        font-size: 2.8rem;
-    }
-
-    header p {
-        font-size: 1rem;
-    }
-
-    main,
-    main.container {
-        margin-top: 2rem;
-    }
+.messages .message + .message {
+    margin-top: .5rem;
 }
