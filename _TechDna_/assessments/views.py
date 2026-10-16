@@ -19,16 +19,14 @@ from django.views.generic import (
 from skills.models import Technology
 
 from .forms import AssessmentForm
-from .models import Assessment
+from .models import Assessment, Favorite
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
 
-# ----------------------------------------------------------------------
 # Mixins reutilizables
-# ----------------------------------------------------------------------
 
 class OwnerRequiredMixin(UserPassesTestMixin):
     """
@@ -44,9 +42,8 @@ class OwnerRequiredMixin(UserPassesTestMixin):
         return assessment.owner == self.request.user
 
 
-# ----------------------------------------------------------------------
+
 # READ
-# ----------------------------------------------------------------------
 
 class AssessmentListView(ListView):
     """Listado público: sólo evaluaciones activas."""
@@ -152,9 +149,30 @@ class OwnerAssessmentListView(AssessmentListView):
         return context
 
 
-# ----------------------------------------------------------------------
+# FAVORITOS
+
+class FavoriteListView(LoginRequiredMixin, ListView):
+    """Listado privado: evaluaciones que el usuario ha guardado en favoritos."""
+
+    model = Favorite
+    template_name = "assessments/favorite_list.html"
+    context_object_name = "favorites"
+    paginate_by = 12
+
+    def get_queryset(self):
+        return (
+            Favorite.objects
+            .filter(user=self.request.user)
+            .select_related(
+                "assessment",
+                "assessment__owner",
+                "assessment__technology",
+                "assessment__role",
+            )
+            .prefetch_related("assessment__images")
+        )
+
 # CREATE / UPDATE / DELETE
-# ----------------------------------------------------------------------
 
 class AssessmentCreateView(LoginRequiredMixin, CreateView):
     model = Assessment

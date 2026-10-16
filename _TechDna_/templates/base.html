@@ -17,7 +17,7 @@
                 <h1>Tech DNA</h1>
             </a>
 
-            <!-- CENTRO: navegación de evaluaciones (Sesión 5) -->
+            <!-- CENTRO: navegación de evaluaciones (Sesiones 5 y 6) -->
             <nav class="main-nav">
                 <a href="{% url 'assessments:list' %}" class="btn btn-admin">
                     Evaluaciones
@@ -26,6 +26,10 @@
                 {% if user.is_authenticated %}
                     <a href="{% url 'assessments:mine' %}" class="btn btn-admin">
                         Mis evaluaciones
+                    </a>
+
+                    <a href="{% url 'assessments:favorites' %}" class="btn btn-admin">
+                        Favoritos
                     </a>
                 {% endif %}
             </nav>

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Mis favoritos | Tech DNA{% endblock %}
+
+{% block content %}
+<section class="page-section assessments-section">
+
+    <div class="section-header">
+        <h1>Mis favoritos</h1>
+
+        <a href="{% url 'assessments:list' %}" class="btn btn-secondary btn-sm">
+            Explorar evaluaciones
+        </a>
+    </div>
+
+    {% if favorites %}
+        <div class="cards-grid">
+            {% for favorite in favorites %}
+                {# _card.html espera una variable "assessment" #}
+                {% with assessment=favorite.assessment %}
+                    {% include "assessments/_card.html" %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+
+        {% include "includes/pagination.html" %}
+    {% else %}
+        <p>Todavía no has guardado ninguna evaluación en favoritos.</p>
+    {% endif %}
+
+</section>
+{% endblock %}

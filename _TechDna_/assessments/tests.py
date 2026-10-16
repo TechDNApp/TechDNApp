@@ -5,7 +5,7 @@ from django.urls import reverse
 from skills.models import Category, Role, Technology
 
 from .forms import AssessmentForm
-from .models import Assessment
+from .models import Assessment, Favorite
 
 User = get_user_model()
 
@@ -345,3 +345,52 @@ class AssessmentFormTests(TestCase):
         form = AssessmentForm(data=self._data())
 
         self.assertTrue(form.is_valid())
+
+class FavoriteListViewTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="laura",
+            password="TestPassword123!",
+        )
+        self.other_user = User.objects.create_user(
+            username="carlos",
+            password="TestPassword123!",
+        )
+        category = Category.objects.create(name="Programación")
+        technology = Technology.objects.create(category=category, name="Python")
+        role = Role.objects.create(name="Backend Developer")
+
+        self.assessment = Assessment.objects.create(
+            owner=self.other_user,
+            title="Python Backend Junior",
+            description="Fundamentos",
+            technology=technology,
+            role=role,
+        )
+        self.url = reverse("assessments:favorites")
+
+    def test_favorites_requires_login(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("accounts:login"), response.url)
+
+    def test_favorites_shows_saved_assessments(self):
+        Favorite.objects.create(user=self.user, assessment=self.assessment)
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Python Backend Junior")
+
+    def test_favorites_only_shows_own_favorites(self):
+        # Laura guarda la evaluación; Carlos no debe verla en SUS favoritos.
+        Favorite.objects.create(user=self.user, assessment=self.assessment)
+        self.client.force_login(self.other_user)
+
+        response = self.client.get(self.url)
+
+        self.assertNotContains(response, "Python Backend Junior")
+        self.assertContains(response, "Todavía no has guardado")

@@ -23,6 +23,11 @@ urlpatterns = [
         views.MyAssessmentListView.as_view(),
         name="mine",
     ),
+        path(
+        "favorites/",
+        views.FavoriteListView.as_view(),
+        name="favorites",
+    ),
     path(
         "technology/<slug:slug>/",
         views.AssessmentByTechnologyListView.as_view(),
