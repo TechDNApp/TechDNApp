@@ -11,6 +11,45 @@
         {% endif %}
     </div>
 
+    <!-- FORMULARIO DE BÚSQUEDA Y FILTROS -->
+    <form method="get" action="{% url 'assessments:list' %}" class="filter-form">
+        <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Buscar prueba, tecnología, rol...">
+
+        <select name="technology">
+            <option value="">Todas las tecnologías</option>
+            {% for tech in technologies %}
+                <option value="{{ tech.id }}" {% if request.GET.technology == tech.id|stringformat:"s" %}selected{% endif %}>
+                    {{ tech.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="role">
+            <option value="">Todos los roles</option>
+            {% for r in roles %}
+                <option value="{{ r.id }}" {% if request.GET.role == r.id|stringformat:"s" %}selected{% endif %}>
+                    {{ r.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="ordering">
+            <option value="newest" {% if request.GET.ordering == "newest" or not request.GET.ordering %}selected{% endif %}>
+                Más recientes
+            </option>
+            <option value="popular" {% if request.GET.ordering == "popular" %}selected{% endif %}>
+                Más vistas
+            </option>
+            <option value="title_asc" {% if request.GET.ordering == "title_asc" %}selected{% endif %}>
+                Título (A-Z)
+            </option>
+        </select>
+
+        <button type="submit" class="btn btn-secondary">Buscar y filtrar</button>
+        <a href="{% url 'assessments:list' %}" class="btn btn-secondary">Limpiar</a>
+    </form>
+
+    <!-- LISTADO DE EVALUACIONES EN TARJETAS -->
     {% if assessments %}
         <div class="cards-grid">
             {% for assessment in assessments %}
@@ -37,8 +76,27 @@
                 </article>
             {% endfor %}
         </div>
+
+        <!-- PAGINACIÓN CON QUERYSTRING -->
+        {% if is_paginated %}
+            <nav class="pagination" style="margin-top: 2rem; display: flex; gap: 1rem; align-items: center; justify-content: center;">
+                {% if page_obj.has_previous %}
+                    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-sm">
+                        Anterior
+                    </a>
+                {% endif %}
+
+                <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+                {% if page_obj.has_next %}
+                    <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-sm">
+                        Siguiente
+                    </a>
+                {% endif %}
+            </nav>
+        {% endif %}
     {% else %}
-        <p>No hay evaluaciones disponibles en este momento.</p>
+        <p>No hay evaluaciones disponibles que coincidan con los filtros.</p>
     {% endif %}
 </section>
 {% endblock %}

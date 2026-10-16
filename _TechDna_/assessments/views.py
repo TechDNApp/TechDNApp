@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     UserPassesTestMixin,
 )
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -20,6 +21,7 @@ from skills.models import Technology
 
 from .forms import AssessmentForm
 from .models import Assessment
+from skills.models import Role
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +51,7 @@ class OwnerRequiredMixin(UserPassesTestMixin):
 # ----------------------------------------------------------------------
 
 class AssessmentListView(ListView):
-    """Listado público: sólo evaluaciones activas."""
+    """Listado público: sólo evaluaciones activas con búsqueda y filtros."""
 
     model = Assessment
     template_name = "assessments/list.html"
@@ -57,7 +59,7 @@ class AssessmentListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        return (
+        queryset = (
             Assessment.objects
             .filter(active=True)
             .select_related(
@@ -66,6 +68,51 @@ class AssessmentListView(ListView):
                 "role",
             )
         )
+
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query)
+                | Q(description__icontains=query)
+                | Q(technology__name__icontains=query)
+                | Q(role__name__icontains=query)
+            )
+
+        technology_id = self.request.GET.get("technology")
+        if technology_id:
+            queryset = queryset-filter(technology_id=technology_id)
+
+        role_id = self.request.GET.get("role")
+        if role_id:
+            queryset = queryset.filter(role_id=role_id)
+
+        mode = self.request.GET.get("mode")
+        if mode:
+            queryset = queryset.filter(mode=mode)
+
+        ordering = self.request.GET.get("ordering", "newest")
+        ordering_map = {
+            "newest": "-created_at",
+            "oldest": "created_at",
+            "popular": "-views_count",
+            "title_asc": "title",
+        }
+
+        queryset = queryset.order_by(ordering_map.get(ordering, "-created_at"))
+
+        return queryset.distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["technologies"] = Technology.objects.all()
+        context["roles"] = Role.objects.all()
+        if hasattr(Assessment, "ModeChoices"):
+            context["modes"] = Assessment.ModeChoices.choices
+
+        query_params = self.request.GET.copy()
+        query_params.pop("page", None)
+        context["querystring"] = query_params.urlencode()
+        return context
 
 
 class AssessmentDetailView(DetailView):
