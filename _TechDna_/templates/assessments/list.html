@@ -12,7 +12,7 @@
     </div>
 
     <!-- FORMULARIO DE BÚSQUEDA Y FILTROS -->
-    <form method="get" action="{% url 'assessments:list' %}" class="filter-form">
+    <form method="get" action="{% url 'assessments:list' %}" class="filter-form" style="margin-bottom: 2rem;">
         <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Buscar prueba, tecnología, rol...">
 
         <select name="technology">
@@ -45,8 +45,10 @@
             </option>
         </select>
 
-        <button type="submit" class="btn btn-secondary">Buscar y filtrar</button>
-        <a href="{% url 'assessments:list' %}" class="btn btn-secondary">Limpiar</a>
+        <div style="display: flex; gap: 0.5rem; width: 100%; margin-top: 0.5rem;">
+            <button type="submit" class="btn btn-secondary">Buscar y filtrar</button>
+            <a href="{% url 'assessments:list' %}" class="btn btn-secondary">Limpiar</a>
+        </div>
     </form>
 
     <!-- LISTADO DE EVALUACIONES EN TARJETAS -->
@@ -58,17 +60,15 @@
                     <p>{{ assessment.description|truncatewords:20 }}</p>
 
                     <div class="card-actions">
-                        <!-- Botón <Ver detalle> -->
-                        <a href="{% url 'assessments:detail' assessment.slug %}" class="btn btn-secondary btn-sm">
-                            Ver detalle
-                        </a>
+                        <!-- Botón <Ver detalle> estilizado -->
+                        <a href="{{ assessment.get_absolute_url }}" class="btn btn-primary btn-sm">Ver detalle</a>
 
-                        <!-- Botones solo para el propietario -->
+                        <!-- Botones solo para el propietario (corregidos a pasar pk) -->
                         {% if user == assessment.owner %}
-                            <a href="{% url 'assessments:update' assessment.slug %}" class="btn btn-warning btn-sm">
+                            <a href="{% url 'assessments:update' assessment.pk %}" class="btn btn-warning btn-sm">
                                 Editar
                             </a>
-                            <a href="{% url 'assessments:delete' assessment.slug %}" class="btn btn-danger btn-sm">
+                            <a href="{% url 'assessments:delete' assessment.pk %}" class="btn btn-danger btn-sm">
                                 Eliminar
                             </a>
                         {% endif %}

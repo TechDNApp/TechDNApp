@@ -23,6 +23,8 @@ from .forms import AssessmentForm
 from .models import Assessment
 from skills.models import Role
 
+from django.db.models import F
+
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
@@ -132,6 +134,12 @@ class AssessmentDetailView(DetailView):
                 "questions",
             )
         )
+
+    def get_object(self, queryset=None):
+        assessment = super().get_object(queryset)
+        Assessment.objects.filter(pk=assessment.pk).update(views_count=F("views_count") + 1)
+        assessment.refresh_from_db(fields=["views_count"])
+        return assessment
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
