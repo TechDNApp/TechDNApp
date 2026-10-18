@@ -4,15 +4,20 @@
 <section class="auth-section">
     <h2>{% if object %}Editar prueba{% else %}Crear prueba{% endif %}</h2>
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
+
+        <p>
+            <label for="id_images">Imágenes de la evaluación:</label>
+            <input type="file" name="images" id="id_images" multiple accept="image/*">
+        </p>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
                 Guardar
             </button>
-            <a href="{% url 'core:home' %}" class="btn btn-secondary">
+            <a href="{% url 'assessments:list' %}" class="btn btn-secondary">
                 Cancelar
             </a>
         </div>

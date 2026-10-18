@@ -5,7 +5,7 @@ from django.urls import reverse
 from skills.models import Category, Role, Technology
 
 from .forms import AssessmentForm
-from .models import Assessment
+from .models import Assessment, Favorite
 
 User = get_user_model()
 
@@ -308,6 +308,54 @@ class AssessmentViewTests(TestCase):
 
         self.assertContains(response, "Python Backend Junior")
         self.assertNotContains(response, "Borrador de Laura")
+
+    # ---------- Contador de visitas y Favoritos ----------
+
+    def test_view_counter_increments_on_detail_get(self):
+        """Verifica que views_count se incrementa en +1 al acceder al detalle."""
+        self.assertEqual(self.assessment.views_count, 0)
+
+        # Primera visita
+        self.client.get(self.assessment.get_absolute_url())
+        self.assessment.refresh_from_db()
+        self.assertEqual(self.assessment.views_count, 1)
+
+        # Segunda visita
+        self.client.get(self.assessment.get_absolute_url())
+        self.assessment.refresh_from_db()
+        self.assertEqual(self.assessment.views_count, 2)
+
+    def test_toggle_favorite_requires_login(self):
+        """Verifica que un usuario no autenticado sea redirigido al login."""
+        url = reverse("assessments:toggle_favorite", kwargs={"pk": self.assessment.pk})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("accounts:login"), response.url)
+
+    def test_other_user_can_toggle_favorite(self):
+        """Verifica que otro usuario pueda añadir y quitar de favoritos."""
+        self.client.force_login(self.other_user)
+        url = reverse("assessments:toggle_favorite", kwargs={"pk": self.assessment.pk})
+
+        # Añadir a favoritos
+        response = self.client.post(url)
+        self.assertRedirects(response, self.assessment.get_absolute_url())
+        self.assertTrue(Favorite.objects.filter(user=self.other_user, assessment=self.assessment).exists())
+
+        # Quitar de favoritos (Toggle)
+        response = self.client.post(url)
+        self.assertRedirects(response, self.assessment.get_absolute_url())
+        self.assertFalse(Favorite.objects.filter(user=self.other_user, assessment=self.assessment).exists())
+
+    def test_owner_cannot_favorite_own_assessment(self):
+        """Verifica que el propietario no pueda marcar su propia evaluación como favorita."""
+        self.client.force_login(self.user)
+        url = reverse("assessments:toggle_favorite", kwargs={"pk": self.assessment.pk})
+
+        response = self.client.post(url)
+        self.assertRedirects(response, self.assessment.get_absolute_url())
+        self.assertFalse(Favorite.objects.filter(user=self.user, assessment=self.assessment).exists())
 
 
 class AssessmentFormTests(TestCase):
