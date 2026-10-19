@@ -46,6 +46,20 @@
             ← Volver al listado
         </a>
 
+        {# Botón de Favorito para usuarios autenticados que no son los dueños #}
+        {% if user.is_authenticated and user != assessment.owner %}
+            <form action="{% url 'assessments:toggle_favorite' assessment.pk %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary btn-sm">
+                    {% if is_favorite %}
+                        ❤️ Quitar de favoritos
+                    {% else %}
+                        🤍 Añadir a favoritos
+                    {% endif %}
+                </button>
+            </form>
+        {% endif %}
+
         {# Sólo oculta los botones; la protección real está en las vistas (403). #}
         {% if user == assessment.owner %}
             <a href="{% url 'assessments:update' assessment.pk %}" class="btn btn-warning btn-sm">
