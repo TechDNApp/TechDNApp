@@ -2,18 +2,28 @@
 Plataforma de evaluación técnica y gestión de talento para candidatos y evaluadores en el ecosistema de desarrollo de software.
 
 ## 📸
-`/`
-<img width="1004" height="863" alt="Screenshot 2026-10-09 132205" src="https://github.com/user-attachments/assets/4dfaca6e-ec2a-4116-843c-d3fd804cfcf9" />
+- logged in `/`
+<img width="1035" height="853" alt="Screenshot 2026-10-19 111656" src="https://github.com/user-attachments/assets/b25b3a65-ce4c-4d3c-ab85-7e75c84055e8" />
 
-<img width="867" height="578" alt="Screenshot 2026-10-09 132352" src="https://github.com/user-attachments/assets/56a77d07-5eb5-4ea5-9a80-c1f595030341" />
 
-`accounts/profile/edit/`
+- `accounts/profile/edit/`
 
 <img width="802" height="918" alt="Screenshot 2026-10-09 132449" src="https://github.com/user-attachments/assets/bc1e2bf2-e3d7-4279-9de9-75001667f09a" />
 
-`accounts/profile/`
+- `accounts/profile/`
 
 <img width="513" height="719" alt="Screenshot 2026-10-09 132630" src="https://github.com/user-attachments/assets/5d7734f8-9a4a-4deb-8b4d-baaf3139c3bc" />
+
+- `assessments/create`
+<img width="938" height="882" alt="Screenshot 2026-10-19 111708" src="https://github.com/user-attachments/assets/9adcf6c0-dba8-471c-bc88-499cd59a614e" />
+
+- `assessments/`
+<img width="980" height="800" alt="Screenshot 2026-10-19 111717" src="https://github.com/user-attachments/assets/6b708d4c-960d-40a6-9a50-c38f7b08f333" />
+
+- `assessments/1/evaluacion-de-prueba`
+<img width="1011" height="730" alt="Screenshot 2026-10-19 111726" src="https://github.com/user-attachments/assets/3432ce44-c62b-4119-84c3-ff1bf175c391" />
+
+
 
 
 
