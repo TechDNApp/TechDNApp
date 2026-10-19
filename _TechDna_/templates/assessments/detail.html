@@ -9,7 +9,25 @@
         {% include "assessments/_badges.html" %}
     </div>
 
-    <h1>{{ assessment.title }}</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <h1>{{ assessment.title }}</h1>
+
+        {# Botón dinámico para añadir o quitar de favoritos #}
+        {% if user.is_authenticated and user != assessment.owner %}
+            <form method="post" action="{% url 'assessments:toggle_favorite' assessment.pk %}">
+                {% csrf_token %}
+                {% if is_favorite %}
+                    <button type="submit" class="btn btn-secondary btn-sm">
+                        ★ Quitar de favoritos
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                        ☆ Añadir a favoritos
+                    </button>
+                {% endif %}
+            </form>
+        {% endif %}
+    </div>
 
     {# Ejercicio 3: "Publicado hace..." #}
     <p class="meta">
@@ -34,8 +52,6 @@
 
         <dt>Visitas</dt>
         <dd>{{ assessment.views_count }}</dd>
-
-
     </dl>
 
     <h2>Descripción</h2>
