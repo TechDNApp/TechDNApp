@@ -9,25 +9,7 @@
         {% include "assessments/_badges.html" %}
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-        <h1>{{ assessment.title }}</h1>
-
-        {# Botón dinámico para añadir o quitar de favoritos #}
-        {% if user.is_authenticated and user != assessment.owner %}
-            <form method="post" action="{% url 'assessments:toggle_favorite' assessment.pk %}">
-                {% csrf_token %}
-                {% if is_favorite %}
-                    <button type="submit" class="btn btn-secondary btn-sm">
-                        ★ Quitar de favoritos
-                    </button>
-                {% else %}
-                    <button type="submit" class="btn btn-outline-primary btn-sm">
-                        ☆ Añadir a favoritos
-                    </button>
-                {% endif %}
-            </form>
-        {% endif %}
-    </div>
+    <h1>{{ assessment.title }}</h1>
 
     {# Ejercicio 3: "Publicado hace..." #}
     <p class="meta">
@@ -52,6 +34,8 @@
 
         <dt>Visitas</dt>
         <dd>{{ assessment.views_count }}</dd>
+
+
     </dl>
 
     <h2>Descripción</h2>
@@ -61,19 +45,6 @@
         <a href="{% url 'assessments:list' %}" class="btn btn-secondary btn-sm">
             ← Volver al listado
         </a>
-
-        {% if user.is_authenticated and user != assessment.owner %}
-            <form action="{% url 'assessments:toggle_favorite' assessment.pk %}" method="post" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-primary btn-sm">
-                    {% if is_favorite %}
-                        ❤️ Quitar de favoritos
-                    {% else %}
-                        🤍 Añadir a favoritos
-                    {% endif %}
-                </button>
-            </form>
-        {% endif %}
 
         {# Sólo oculta los botones; la protección real está en las vistas (403). #}
         {% if user == assessment.owner %}
