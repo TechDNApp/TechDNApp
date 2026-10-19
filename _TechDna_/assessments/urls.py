@@ -5,8 +5,8 @@ from . import views
 app_name = "assessments"
 
 # IMPORTANTE: el detalle <int:pk>/<slug:slug>/ va el ÚLTIMO.
-# Si estuviera antes, "/assessments/5/edit/" encajaría con él (slug="edit")
-# y se mostraría el detalle en lugar de la edición, saltándose el 403.
+# Si estuviera antes, "/assessments/5/edit/" o "/assessments/5/favorite/" 
+# encajaría con él (slug="edit" o "favorite") y se mostraría el detalle en lugar de la vista correspondiente.
 urlpatterns = [
     path(
         "",
@@ -42,6 +42,11 @@ urlpatterns = [
         "<int:pk>/delete/",
         views.AssessmentDeleteView.as_view(),
         name="delete",
+    ),
+    path(
+        "<int:pk>/favorite/",
+        views.toggle_favorite,
+        name="toggle_favorite",
     ),
     path(
         "<int:pk>/<slug:slug>/",

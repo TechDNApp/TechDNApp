@@ -2,13 +2,15 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     UserPassesTestMixin,
 )
-from django.db.models import Q
+from django.db.models import F, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.views.decorators.http import require_POST
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -17,13 +19,10 @@ from django.views.generic import (
     UpdateView,
 )
 
-from skills.models import Technology
+from skills.models import Role, Technology
 
 from .forms import AssessmentForm
-from .models import Assessment
-from skills.models import Role
-
-from django.db.models import F
+from .models import Assessment, Favorite
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +42,8 @@ class OwnerRequiredMixin(UserPassesTestMixin):
     /assessments/10/edit/ a mano. Por eso la comprobación vive aquí.
     """
 
+    raise_exception = True
+
     def test_func(self):
         assessment = self.get_object()
         return assessment.owner == self.request.user
@@ -61,6 +62,7 @@ class AssessmentListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
+        # Optimización con select_related y prefetch_related para evitar N+1
         queryset = (
             Assessment.objects
             .filter(active=True)
@@ -68,6 +70,9 @@ class AssessmentListView(ListView):
                 "owner",
                 "technology",
                 "role",
+            )
+            .prefetch_related(
+                "images",
             )
         )
 
@@ -82,7 +87,7 @@ class AssessmentListView(ListView):
 
         technology_id = self.request.GET.get("technology")
         if technology_id:
-            queryset = queryset-filter(technology_id=technology_id)
+            queryset = queryset.filter(technology_id=technology_id)
 
         role_id = self.request.GET.get("role")
         if role_id:
@@ -132,11 +137,13 @@ class AssessmentDetailView(DetailView):
             )
             .prefetch_related(
                 "questions",
+                "images",
             )
         )
 
     def get_object(self, queryset=None):
         assessment = super().get_object(queryset)
+        # Incremento atómico del contador de visitas mediante expresión F()
         Assessment.objects.filter(pk=assessment.pk).update(views_count=F("views_count") + 1)
         assessment.refresh_from_db(fields=["views_count"])
         return assessment
@@ -150,6 +157,15 @@ class AssessmentDetailView(DetailView):
             return redirect(self.object, permanent=True)
 
         context = self.get_context_data(object=self.object)
+
+        # Comprobar si el usuario autenticado tiene guardada la evaluación como favorita
+        is_favorite = False
+        if request.user.is_authenticated:
+            is_favorite = Favorite.objects.filter(
+                user=request.user, assessment=self.object
+            ).exists()
+        context["is_favorite"] = is_favorite
+
         return self.render_to_response(context)
 
 
@@ -168,6 +184,9 @@ class MyAssessmentListView(LoginRequiredMixin, ListView):
             .select_related(
                 "technology",
                 "role",
+            )
+            .prefetch_related(
+                "images",
             )
         )
 
@@ -208,6 +227,37 @@ class OwnerAssessmentListView(AssessmentListView):
 
 
 # ----------------------------------------------------------------------
+# FAVORITES (TOGGLE)
+# ----------------------------------------------------------------------
+
+@login_required
+@require_POST
+def toggle_favorite(request, pk):
+    """
+    Permite a los usuarios autenticados marcar o desmarcar una evaluación como favorita.
+    Impide que el propietario guarde su propia prueba.
+    """
+    assessment = get_object_or_404(Assessment, pk=pk)
+
+    # El propietario no puede marcar su propia evaluación como favorita
+    if assessment.owner == request.user:
+        messages.error(request, "No puedes añadir a favoritos tu propia evaluación.")
+        return redirect(assessment)
+
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user, assessment=assessment
+    )
+
+    if not created:
+        favorite.delete()
+        messages.info(request, "Evaluación eliminada de tus favoritos.")
+    else:
+        messages.success(request, "Evaluación añadida a tus favoritos.")
+
+    return redirect(assessment)
+
+
+# ----------------------------------------------------------------------
 # CREATE / UPDATE / DELETE
 # ----------------------------------------------------------------------
 
@@ -224,6 +274,15 @@ class AssessmentCreateView(LoginRequiredMixin, CreateView):
         form.instance.active = True
 
         response = super().form_valid(form)
+
+        # Procesar imágenes adjuntas y marcar la primera como principal (is_primary=True)
+        images = self.request.FILES.getlist("images")
+        for index, image_file in enumerate(images):
+            self.object.images.create(
+                image=image_file,
+                is_primary=(index == 0),
+                position=index,
+            )
 
         logger.info(
             "Assessment created: id=%s owner=%s",
@@ -250,6 +309,18 @@ class AssessmentUpdateView(
 
     def form_valid(self, form):
         response = super().form_valid(form)
+
+        # Guardar imágenes adicionales asignando posiciones consecutivas
+        images = self.request.FILES.getlist("images")
+        if images:
+            has_primary = self.object.images.filter(is_primary=True).exists()
+            start_pos = self.object.images.count()
+            for index, image_file in enumerate(images):
+                self.object.images.create(
+                    image=image_file,
+                    is_primary=(not has_primary and index == 0),
+                    position=start_pos + index,
+                )
 
         logger.info(
             "Assessment updated: id=%s owner=%s",

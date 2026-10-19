@@ -57,7 +57,7 @@
             {% for assessment in assessments %}
                 <article class="card">
                     <h2>{{ assessment.title }}</h2>
-                    <p>{{ assessment.description|truncatewords:20 }}</p>
+                    <p style="overflow-wrap: anywhere; word-break: break-word;">{{ assessment.description|truncatewords:20 }}</p>
 
                     <div class="card-actions">
                         <!-- Botón <Ver detalle> estilizado -->
