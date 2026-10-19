@@ -18,7 +18,7 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
 
 
 
-## 📋 Progreso del Proyecto (Sesiones 1 - 3)
+## 📋 Progreso del Proyecto (Sesiones 1 - 6)
 
 - Sesión 1 — Arquitectura Base y Setup Inicial
     - Inicialización del proyecto Django con configuración modular (`settings/base.py`).
@@ -33,6 +33,21 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
     - Flujo completo de autenticación: registro con validación de email único, login, logout y auto-login tras registrarse.
     - Vistas y formularios de perfil (`profile`, `profile_edit`) con subida de imágenes mediante `Pillow` y configuración de `MEDIA_URL` / `MEDIA_ROOT`.
     - Suite de 4 pruebas unitarias superadas en `accounts/tests.py`.
+- **Sesión 4 — Módulo de Evaluaciones (CRUD Base)**
+    - Implementación del modelo `Assessment` y `Favorite` con relaciones hacia `User`, `Technology` y `Role`.
+    - Generación automática y segura de URLs amigables mediante slugs canónicos (`slugify`).
+    - Vistas de listado, creación (`create`), actualización (`update`) y eliminación (`delete`).
+- **Sesión 5 — Búsqueda, Filtros y Optimización de Consultas**
+    - Implementación de búsqueda por términos (`q`) y filtrado por tecnología, rol o propietario.
+    - Optimización de consultas a la base de datos utilizando `select_related` y `prefetch_related` para evitar problemas N+1.
+    - Paginación de listados e interfaz de filtrado avanzada.
+- **Sesión 6 — Funcionalidades Avanzadas y Suite de Tests**
+    - Contador de visitas atómico en la vista de detalle utilizando expresiones `F()` (`views_count`).
+    - Sistema de marcación de favoritos (`toggle_favorite`) con restricción anti-autofavorito para propietarios.
+    - Subida de archivos multimedia adjuntos en formularios de evaluación (`multipart/form-data`).
+    - Ajustes de diseño CSS para prevenir desbordamientos (`overflow-wrap: anywhere`).
+    - Autorización estricta mediante `OwnerRequiredMixin` retornando `HttpResponseForbidden` (403).
+    - Suite completa de 30 pruebas unitarias verificadas y superadas en `assessments/tests.py`.
 
 -------------------------
 
@@ -60,9 +75,17 @@ TechDNApp/
     │   ├── tests.py              # Tests unitarios de autenticación
     │   ├── urls.py               # Enrutamiento de cuentas
     │   └── views.py              # Vistas de registro y perfil
+    ├── assessments/              # Aplicación de evaluaciones técnicas
+    │   ├── migrations/           # Migraciones del modelo Assessment y Favorite
+    │   ├── forms.py              # Formularios de creación y edición
+    │   ├── models.py             # Modelos Assessment y Favorite
+    │   ├── tests.py              # Suite de 30 pruebas unitarias
+    │   ├── urls.py               # Rutas CRUD, búsqueda y favoritos
+    │   └── views.py              # Vistas basadas en clases y funciones
     ├── core/                     # Vistas globales y páginas base
-    ├── media/                    # Almacenamiento local de avatares subidos
+    ├── media/                    # Almacenamiento local de avatares y archivos
     │   └── avatars/
+    ├── skills/                   # Aplicación de competencias, tecnologías y roles
     ├── static/                   # Hojas de estilo y recursos estáticos
     │   └── css/
     │       └── styles.css
@@ -74,14 +97,10 @@ TechDNApp/
     │   └── wsgi.py
     ├── templates/                # Plantillas HTML
     │   ├── accounts/
-    │   │   ├── login.html
-    │   │   ├── register.html
-    │   │   ├── profile.html
-    │   │   └── profile_edit.html
+    │   ├── assessments/          # Plantillas de listado, detalle, formularios
     │   └── base.html
     ├── manage.py
     └── requirements.txt
-
 ```
 
 ## ⚙️ Instalación y Puesta en Marcha
@@ -130,6 +149,15 @@ Para validar la suite completa de pruebas unitarias de la app accounts:
 ```bash
 python manage.py test accounts
 ```
+```bash
+python manage.py test assessments
+```
+
+Para validar todas las aplicaciones del proyecto:
+
+```bash
+python manage.py test 
+```
 
 ## 📌 Rutas Principales de Autenticación
 
@@ -141,16 +169,27 @@ python manage.py test accounts
 | `GET` | `/accounts/profile/` | `accounts:profile` | Vista de detalle del perfil técnico y avatar | Autenticado |
 | `GET`, `POST` | `/accounts/profile/edit/` | `accounts:profile_edit` | Edición de datos personales, enlaces y avatar (`multipart`) | Autenticado |
 
+| Método | Ruta | Nombre de URL (`name`) | Descripción | Acceso |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/assessments/` | `assessments:list` | Listado público de evaluaciones con filtros y búsqueda | Público |
+| `GET`, `POST` | `/assessments/create/` | `assessments:create` | Crear una nueva evaluación técnica | Autenticado |
+| `GET` | `/assessments/mine/` | `assessments:mine` | Mis evaluaciones creadas (incluidas inactivas) | Autenticado |
+| `GET` | `/assessments/technology/<slug>/` | `assessments:by_technology` | Filtrar evaluaciones por tecnología | Público |
+| `GET` | `/assessments/owner/<username>/` | `assessments:by_owner` | Evaluaciones públicas de un usuario | Público |
+| `POST` | `/assessments/<pk>/favorite/` | `assessments:toggle_favorite` | Añadir o quitar de favoritos | Autenticado (no propietario) |
+| `GET`, `POST` | `/assessments/<pk>/edit/` | `assessments:update` | Editar evaluación propia | Propietario (403 si no) |
+| `GET`, `POST` | `/assessments/<pk>/delete/` | `assessments:delete` | Eliminar evaluación propia | Propietario (403 si no) |
+| `GET` | `/assessments/<pk>/<slug>/` | `assessments:detail` | Vista de detalle de la evaluación (incrementa visitas) | Público |
+
 
 
 ## 👥 Equipo de Desarrollo
 
 | Nombre | Rol / Track | GitHub | LinkedIn |
 | :--- | :--- | :--- | :--- |
-| **Angelo** | Full Stack Developer | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
+| **Angelo** |Sprint2 Scrum Master & Dev | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
 | **Maite** | Full Stack Developer | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
-| **Mio** | Sprint1 Scrum Master & Dev | [github](https://github.com/miaryl) | [linkedin](https://linkedin.com/in/mio-ogura) |
-
+| **Mio** | Full Stack Developer | [github](https://github.com/miaryl) | [linkedin](https://linkedin.com/in/mio-ogura) |
 
 
 
