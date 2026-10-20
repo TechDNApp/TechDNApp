@@ -61,11 +61,18 @@
                     <h2>{{ assessment.title }}</h2>
                     <p style="overflow-wrap: anywhere; word-break: break-word;">{{ assessment.description|truncatewords:20 }}</p>
 
+                    {# Mostrar el número de veces que ha sido guardada en favoritos[cite: 1] #}
+                    <div style="margin-bottom: 0.75rem;">
+                        <span class="badge bg-secondary" style="font-size: 0.85rem;">
+                            ❤️ Guardada: {{ assessment.favorites_count }} veces
+                        </span>
+                    </div>
+
                     <div class="card-actions">
-                        <!-- Botón <Ver detalle> estilizado -->
+                        <!-- Botón <Ver detalle> estilizado[cite: 1] -->
                         <a href="{{ assessment.get_absolute_url }}" class="btn btn-primary btn-sm">Ver detalle</a>
 
-                        <!-- Botón de Favoritos en el listado para usuarios autenticados que no son dueños -->
+                        <!-- Botón de Favoritos en el listado para usuarios autenticados que no son dueños[cite: 1] -->
                         {% if user.is_authenticated and user != assessment.owner %}
                             <form action="{% url 'assessments:toggle_favorite' assessment.pk %}" method="post" style="display: inline;">
                                 {% csrf_token %}
@@ -75,7 +82,7 @@
                             </form>
                         {% endif %}
 
-                        <!-- Botones solo para el propietario -->
+                        <!-- Botones solo para el propietario[cite: 1] -->
                         {% if user == assessment.owner %}
                             <a href="{% url 'assessments:update' assessment.pk %}" class="btn btn-warning btn-sm">
                                 Editar
@@ -89,7 +96,7 @@
             {% endfor %}
         </div>
 
-        <!-- PAGINACIÓN CON QUERYSTRING -->
+        <!-- PAGINACIÓN CON QUERYSTRING[cite: 1] -->
         {% if is_paginated %}
             <nav class="pagination" style="margin-top: 2rem; display: flex; gap: 1rem; align-items: center; justify-content: center;">
                 {% if page_obj.has_previous %}
@@ -108,7 +115,7 @@
             </nav>
         {% endif %}
     {% else %}
-        <p>No hay evaluaciones disponibles que coincidan con los filtros.</p>
+        <p>No hay evaluaciones disponibles que coincidan con los filtros[cite: 1].</p>
     {% endif %}
 </section>
 {% endblock %}
