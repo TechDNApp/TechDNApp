@@ -42,13 +42,20 @@ DJANGO_APPS = [
          "django.contrib.staticfiles",
      ]
 
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "django_filters",
+    "drf_spectacular",
+
+
+]
 
 LOCAL_APPS = [
          "core",
          "accounts",
          "skills",
          "assessments",
+         # "api"
      ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
