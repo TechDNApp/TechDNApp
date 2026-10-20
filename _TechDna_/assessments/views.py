@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     UserPassesTestMixin,
 )
-from django.db.models import F, Q
+from django.db.models import Count, F, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -62,10 +62,12 @@ class AssessmentListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        # Optimización con select_related y prefetch_related para evitar N+1
+        # Optimización con select_related y prefetch_related para evitar N+1,
+        # además de annotate para calcular el número de favoritos.
         queryset = (
             Assessment.objects
             .filter(active=True)
+            .annotate(favorites_count=Count("favorites"))
             .select_related(
                 "owner",
                 "technology",
@@ -102,6 +104,7 @@ class AssessmentListView(ListView):
             "newest": "-created_at",
             "oldest": "created_at",
             "popular": "-views_count",
+            "most_favorited": "-favorites_count",
             "title_asc": "title",
         }
 

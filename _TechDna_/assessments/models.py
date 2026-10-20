@@ -52,6 +52,9 @@ class Assessment(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["active", "mode"], name="idx_assessment_active_mode"),
+        ]
 
     def save(self, *args, **kwargs):
         # Política: el slug se genera una sola vez. Si luego cambia el título,
@@ -157,6 +160,12 @@ class Question(models.Model):
 
     class Meta:
         ordering = ["difficulty", "created_at"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(difficulty__gte=1) & models.Q(difficulty__lte=5),
+                name="check_question_difficulty_range"
+            ),
+        ]
 
     def __str__(self):
         return self.statement[:50]
@@ -220,6 +229,12 @@ class Result(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(score__gte=0) & models.Q(score__lte=100),
+                name="check_result_score_range"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.score}%"

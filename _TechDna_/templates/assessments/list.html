@@ -33,16 +33,18 @@
             {% endfor %}
         </select>
 
-        <select name="ordering">
+        <select name="ordering" class="form-select" onchange="this.form.submit()">
             <option value="newest" {% if request.GET.ordering == "newest" or not request.GET.ordering %}selected{% endif %}>
                 Más recientes
             </option>
+            <option value="oldest" {% if request.GET.ordering == 'oldest' %}selected{% endif %}>Más antiguas</option>
             <option value="popular" {% if request.GET.ordering == "popular" %}selected{% endif %}>
                 Más vistas
             </option>
             <option value="title_asc" {% if request.GET.ordering == "title_asc" %}selected{% endif %}>
                 Título (A-Z)
             </option>
+            <option value="most_favorited" {% if request.GET.ordering == 'most_favorited' %}selected{% endif %}>Más guardadas en favoritos</option>
         </select>
 
         <div style="display: flex; gap: 0.5rem; width: 100%; margin-top: 0.5rem;">
