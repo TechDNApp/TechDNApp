@@ -57,6 +57,14 @@ class AssessmentSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
+    def create(self, validated_data):
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            validated_data["owner"] = request.user
+        return super().create(validated_data)
+
+        
+
 class FavoriteSerializer(serializers.ModelSerializer):
     assessment = AssessmentSerializer(read_only=True)
 
@@ -67,3 +75,5 @@ class FavoriteSerializer(serializers.ModelSerializer):
             "assessment",
             "created_at",
         ]
+
+    
