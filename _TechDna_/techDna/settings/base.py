@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -199,3 +200,12 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API REST del proyecto TechDNA.",
     "VERSION": "1.0.0",
 }
+
+# Configuración para usar SQLite en memoria durante los tests
+if "test" in sys.argv or "test_coverage" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }
