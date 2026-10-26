@@ -23,7 +23,7 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
 - `assessments/1/evaluacion-de-prueba`
 <img width="1011" height="730" alt="Screenshot 2026-10-19 111726" src="https://github.com/user-attachments/assets/3432ce44-c62b-4119-84c3-ff1bf175c391" />
 
-- sesión 8: documentación `http://localhost:8000/api/docs/`
+- sesión 8: documentación `api/docs/`
 <img width="1836" height="907" alt="Screenshot 2026-10-26 155147" src="https://github.com/user-attachments/assets/1d2bb0ab-0225-49e5-9dee-f3a1001e11d4" />
 
 
@@ -32,7 +32,7 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
 
 
 
-## 📋 Progreso del Proyecto (Sesiones 1 - 6)
+## 📋 Progreso del Proyecto (Sesiones 1 - 8)
 
 - Sesión 1 — Arquitectura Base y Setup Inicial
     - Inicialización del proyecto Django con configuración modular (`settings/base.py`).
