@@ -23,6 +23,10 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
 - `assessments/1/evaluacion-de-prueba`
 <img width="1011" height="730" alt="Screenshot 2026-10-19 111726" src="https://github.com/user-attachments/assets/3432ce44-c62b-4119-84c3-ff1bf175c391" />
 
+- sesión 8: documentación `http://localhost:8000/api/docs/`
+<img width="1836" height="907" alt="Screenshot 2026-10-26 155147" src="https://github.com/user-attachments/assets/1d2bb0ab-0225-49e5-9dee-f3a1001e11d4" />
+
+
 
 
 
@@ -58,6 +62,16 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
     - Ajustes de diseño CSS para prevenir desbordamientos (`overflow-wrap: anywhere`).
     - Autorización estricta mediante `OwnerRequiredMixin` retornando `HttpResponseForbidden` (403).
     - Suite completa de 30 pruebas unitarias verificadas y superadas en `assessments/tests.py`.
+- **Sesión 7 — API REST Base y Django REST Framework (DRF)**
+    - Creación de la aplicación `api` y configuración de Django REST Framework.
+    - Registro de routers principales bajo `/api/v1/`.
+    - Implementación de endpoints de solo lectura para `technologies` y `roles`.
+- **Sesión 8 — API REST Avanzada: Serializers, Permisos, Filtros y Testing**
+    - Implementación de `AssessmentSerializer` con serializers públicos anidados (`UserPublicSerializer`, `TechnologySerializer`, `RoleSerializer`) y asignación automática del usuario solicitante como propietario.
+    - Creación del permiso personalizado `IsOwnerOrReadOnly` para restringir la modificación y eliminación únicamente al propietario del recurso.
+    - Filtrado dinámico REST mediante `django-filters` (`AssessmentFilter`) por tecnología y rol, complementado con búsqueda textual (`search_fields`) y ordenamiento por fecha y favoritos.
+    - Acción personalizada `@action` para marcar/desmarcar evaluaciones como favoritas desde la API (`POST /api/v1/assessments/<pk>/favorite/`).
+    - Suite completa de 6 pruebas unitarias automatizadas (`APITestCase`) validando autenticación, permisos, CRUD y filtros.
 
 -------------------------
 
@@ -197,8 +211,8 @@ python manage.py test
 
 | Nombre | Rol / Track | GitHub | LinkedIn |
 | :--- | :--- | :--- | :--- |
-| **Angelo** |Sprint2 Scrum Master & Dev | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
-| **Maite** | Full Stack Developer | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
+| **Angelo** | Full Stack Developer | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
+| **Maite** | Sprint3 Scrum Master & Dev | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
 | **Mio** | Full Stack Developer | [github](https://github.com/miaryl) | [linkedin](https://linkedin.com/in/mio-ogura) |
 
 
