@@ -31,6 +31,7 @@
 
     /* Header */
     --gradient-brand: linear-gradient(135deg, #0f172a, #1e293b, #2563eb);
+    --inverted-gradient-brand: linear-gradient(135deg, #2563eb, #0f172a);
 }
 
 /* ==================================
@@ -304,7 +305,7 @@ li:hover {
 
 /* Primario */
 .btn-primary {
-    background: var(--gradient-brand);
+    background: var(--inverted-gradient-brand);
     color: white;
 }
 
