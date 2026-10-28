@@ -68,6 +68,11 @@
             <a href="{% url 'assessments:delete' assessment.pk %}" class="btn btn-danger btn-sm">
                 Eliminar evaluación
             </a>
+            {% if assessment.active %}
+                <a href="{% url 'offers:create' %}?assessment={{ assessment.pk }}" class="btn btn-primary btn-sm">
+                    Enviar oferta de empleo
+                </a>
+            {% endif %}
         {% endif %}
     </div>
 

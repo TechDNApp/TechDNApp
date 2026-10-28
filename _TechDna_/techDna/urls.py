@@ -29,6 +29,7 @@ urlpatterns = [
     path("", include("core.urls")),
     path("accounts/", include("accounts.urls")),
     path("assessments/", include("assessments.urls")),
+    path("offers/", include("offers.urls")),
     
     # Inclusión de la API REST (versión v1)
     path("api/v1/", include("api.urls")),

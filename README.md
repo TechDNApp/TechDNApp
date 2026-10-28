@@ -32,7 +32,7 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
 
 
 
-## 📋 Progreso del Proyecto (Sesiones 1 - 8)
+## 📋 Progreso del Proyecto (Sesiones 1 - 9)
 
 - Sesión 1 — Arquitectura Base y Setup Inicial
     - Inicialización del proyecto Django con configuración modular (`settings/base.py`).
@@ -72,6 +72,14 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
     - Filtrado dinámico REST mediante `django-filters` (`AssessmentFilter`) por tecnología y rol, complementado con búsqueda textual (`search_fields`) y ordenamiento por fecha y favoritos.
     - Acción personalizada `@action` para marcar/desmarcar evaluaciones como favoritas desde la API (`POST /api/v1/assessments/<pk>/favorite/`).
     - Suite completa de 6 pruebas unitarias automatizadas (`APITestCase`) validando autenticación, permisos, CRUD y filtros.
+- **Sesión 9 — Ofertas de empleo, contraofertas y negociación**
+    - Nueva app `offers` con el modelo `JobOffer`: el propietario de una evaluación envía a un candidato una oferta (puesto, salario, modalidad, mensaje y caducidad opcional).
+    - Capa de servicios (`offers/services.py`) con transacciones atómicas y `select_for_update`: crear, aceptar, rechazar, cancelar y contraofertar. Sólo la otra parte puede responder a una propuesta y sólo su autor puede cancelarla.
+    - Contraofertas encadenadas mediante `parent`, que conservan todo el historial de la negociación. Caducidad automática (`expire_pending_offers`, preparada para Celery Beat).
+    - Constraints en base de datos: salario positivo, sin ofertas a uno mismo y una única oferta pendiente por evaluación y candidato.
+    - API REST `/api/v1/offers/` con acciones `accept`, `reject`, `cancel`, `counter` e `history`, y filtros `?box=received|sent` y `?status=`.
+    - Interfaz web en `/offers/`: bandeja con pestañas, detalle con historial, formulario de envío y de contraoferta, y botón «Enviar oferta de empleo» en el detalle de la evaluación.
+    - Suite de 45 pruebas (servicios, API y vistas web).
 
 -------------------------
 

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}{{ offer.position_title }} | Tech DNA{% endblock %}
+
+{% block content %}
+{% include "offers/_messages.html" %}
+
+<section class="page-section">
+
+    <div class="badges">
+        {% include "offers/_status_badge.html" %}
+        {% if offer.is_counter %}<span class="badge badge-training">Contraoferta</span>{% endif %}
+    </div>
+
+    <h1>{{ offer.position_title }}</h1>
+    <p class="meta">
+        A partir de la evaluación
+        <a href="{{ offer.assessment.get_absolute_url }}">{{ offer.assessment.title }}</a>
+    </p>
+
+    <dl class="detail-list">
+        <dt>Evaluador</dt>
+        <dd>{{ offer.evaluator.username }}</dd>
+
+        <dt>Candidato</dt>
+        <dd>{{ offer.candidate.username }}</dd>
+
+        <dt>Salario</dt>
+        <dd>{{ offer.salary|floatformat:"2g" }} € brutos/año</dd>
+
+        <dt>Modalidad</dt>
+        <dd>{{ offer.get_modality_display }}</dd>
+
+        <dt>Propuesta de</dt>
+        <dd>{{ offer.created_by.username }}, {{ offer.created_at|date:"d/m/Y H:i" }}</dd>
+
+        {% if offer.expires_at %}
+            <dt>Caduca</dt>
+            <dd>{{ offer.expires_at|date:"d/m/Y H:i" }}</dd>
+        {% endif %}
+
+        {% if offer.responded_at %}
+            <dt>Respondida</dt>
+            <dd>{{ offer.responded_at|date:"d/m/Y H:i" }}</dd>
+        {% endif %}
+    </dl>
+
+    {% if offer.message %}
+        <h2>Mensaje</h2>
+        <p>{{ offer.message|linebreaksbr }}</p>
+    {% endif %}
+
+    {% if latest %}
+        <p class="message">
+            Esta propuesta recibió una contraoferta.
+            <a href="{{ latest.get_absolute_url }}">Ver la propuesta siguiente →</a>
+        </p>
+    {% elif offer.is_pending and not can_respond and not can_cancel %}
+        <p class="message">La oferta ha caducado o ya no admite cambios.</p>
+    {% elif offer.is_pending and can_cancel %}
+        <p class="message">Esperando la respuesta de {{ other_party.username }}.</p>
+    {% endif %}
+
+    {# Sólo se ocultan botones; la protección real está en services.py #}
+    <div class="card-actions detail-actions">
+        <a href="{% url 'offers:list' %}" class="btn btn-secondary btn-sm">← Volver a mis ofertas</a>
+
+        {% if can_respond %}
+            <form action="{% url 'offers:accept' offer.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">Aceptar</button>
+            </form>
+            <form action="{% url 'offers:reject' offer.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Rechazar</button>
+            </form>
+        {% endif %}
+
+        {% if can_cancel %}
+            <form action="{% url 'offers:cancel' offer.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning btn-sm">Cancelar oferta</button>
+            </form>
+        {% endif %}
+    </div>
+
+    {% if can_respond %}
+        <h2>Hacer una contraoferta</h2>
+        <form action="{% url 'offers:counter' offer.pk %}" method="post" class="offer-counter-form">
+            {% csrf_token %}
+            {{ counter_form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-sm">Enviar contraoferta</button>
+            </div>
+        </form>
+    {% endif %}
+
+    {% if history|length > 1 %}
+        <h2>Historial de la negociación</h2>
+        <ol class="offer-history">
+            {% for step in history %}
+                <li{% if step.pk == offer.pk %} class="current"{% endif %}>
+                    <a href="{{ step.get_absolute_url }}">
+                        {{ step.created_by.username }} propuso {{ step.salary|floatformat:"0g" }} € ({{ step.get_modality_display }})
+                    </a>
+                    {% with offer=step %}{% include "offers/_status_badge.html" %}{% endwith %}
+                    <span class="meta">{{ step.created_at|date:"d/m/Y H:i" }}</span>
+                </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+
+</section>
+{% endblock %}

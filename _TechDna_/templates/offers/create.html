@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Enviar oferta | Tech DNA{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <h2>Enviar oferta de empleo</h2>
+
+    {% if not form.fields.assessment.queryset.exists %}
+        <p>Necesitas al menos una evaluación activa propia para enviar ofertas.</p>
+        <a href="{% url 'assessments:create' %}" class="btn btn-primary">+ Crear prueba</a>
+    {% else %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Enviar oferta</button>
+                <a href="{% url 'offers:list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    {% endif %}
+</section>
+{% endblock %}

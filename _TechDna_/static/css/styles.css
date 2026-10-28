@@ -713,6 +713,39 @@ label {
     border-left-color: #dc2626;
 }
 
+/* Ofertas de empleo (sesión 9) */
+
+.badge-offer-pending   { background: #fef3c7; color: #92400e; }
+.badge-offer-accepted  { background: #dcfce7; color: #15803d; }
+.badge-offer-rejected  { background: #fee2e2; color: #991b1b; }
+.badge-offer-cancelled,
+.badge-offer-expired   { background: #e5e7eb; color: #4b5563; }
+.badge-offer-countered { background: #dbeafe; color: #1d4ed8; }
+
+.offer-tabs {
+    justify-content: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.offer-history {
+    padding-left: 1.25rem;
+}
+
+.offer-history li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+.offer-history li.current {
+    font-weight: 700;
+}
+
+.offer-history .meta {
+    margin-bottom: 0;
+}
+
 /* Paginación */
 
 .pagination {

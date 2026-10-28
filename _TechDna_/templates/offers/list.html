@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Mis ofertas | Tech DNA{% endblock %}
+
+{% block content %}
+{% include "offers/_messages.html" %}
+
+<section class="page-section">
+
+    <div class="section-header">
+        <h1>Ofertas de empleo</h1>
+        <a href="{% url 'offers:create' %}" class="btn btn-primary btn-sm">+ Enviar oferta</a>
+    </div>
+
+    <nav class="main-nav offer-tabs">
+        {% for key, label in tabs.items %}
+            <a href="?tab={{ key }}"
+               class="btn btn-sm {% if key == tab %}btn-primary{% else %}btn-secondary{% endif %}">
+                {{ label }}
+            </a>
+        {% endfor %}
+    </nav>
+
+    {% if offers %}
+        <div class="cards-grid">
+            {% for offer in offers %}
+                <article class="card">
+                    <div>
+                        <div class="badges">
+                            {% include "offers/_status_badge.html" %}
+                            {% if offer.is_counter %}<span class="badge badge-training">Contraoferta</span>{% endif %}
+                        </div>
+                        <h2><a href="{{ offer.get_absolute_url }}">{{ offer.position_title }}</a></h2>
+                        <p class="meta">
+                            {{ offer.assessment.title }}<br>
+                            {% if user == offer.evaluator %}
+                                Candidato: {{ offer.candidate.username }}
+                            {% else %}
+                                Evaluador: {{ offer.evaluator.username }}
+                            {% endif %}
+                        </p>
+                        <p><strong>{{ offer.salary|floatformat:"0g" }} €</strong> · {{ offer.get_modality_display }}</p>
+                    </div>
+                    <p class="meta">
+                        Propuesta de {{ offer.created_by.username }}, hace {{ offer.created_at|timesince }}
+                    </p>
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if is_paginated %}
+        <nav class="pagination" aria-label="Paginación">
+            {% if page_obj.has_previous %}
+                <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-sm">Anterior</a>
+            {% endif %}
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-sm">Siguiente</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    {% else %}
+        <p>No hay ofertas en esta pestaña.</p>
+    {% endif %}
+
+</section>
+{% endblock %}
