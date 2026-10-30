@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4 chat-list-container">
+    <h2 class="mb-4">Mis Conversaciones</h2>
+
+    <div class="list-group conversation-list">
+        {% for conversation in conversations %}
+            <a href="{% url 'chats:detail' conversation.id %}" class="list-group-item list-group-item-action conversation-item">
+                <div class="conversation-info">
+                    <h5 class="conversation-title">
+                        Chat con 
+                        {% if conversation.student == request.user %}
+                            {{ conversation.instructor.username }} (Instructor)
+                        {% else %}
+                            {{ conversation.student.username }} (Estudiante)
+                        {% endif %}
+                    </h5>
+                    <p class="conversation-last-message">
+                        {% if conversation.last_message %}
+                            {{ conversation.last_message.content|truncatechars:50 }}
+                        {% else %}
+                            No hay mensajes recientes
+                        {% endif %}
+                    </p>
+                </div>
+                <span class="conversation-date">
+                    {% if conversation.updated_at %}
+                        {{ conversation.updated_at|date:"d/m/Y H:i" }}
+                    {% endif %}
+                </span>
+            </a>
+        {% empty %}
+            <div class="no-conversations">
+                <p>No tienes conversaciones activas en este momento.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Estilos CSS -->
+<style>
+    .chat-list-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .conversation-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .conversation-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #fff;
+        text-decoration: none;
+        color: inherit;
+        transition: background-color 0.2s;
+    }
+    .conversation-item:hover {
+        background-color: #f8f9fa;
+    }
+    .conversation-info {
+        flex-grow: 1;
+    }
+    .conversation-title {
+        margin: 0 0 5px 0;
+        font-size: 16px;
+        color: #007bff;
+    }
+    .conversation-last-message {
+        margin: 0;
+        font-size: 13px;
+        color: #6c757d;
+    }
+    .conversation-date {
+        font-size: 11px;
+        color: #adb5bd;
+        white-space: nowrap;
+        margin-left: 15px;
+    }
+    .no-conversations {
+        text-align: center;
+        padding: 40px;
+        color: #6c757d;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}

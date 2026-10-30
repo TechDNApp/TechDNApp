@@ -1,5 +1,7 @@
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -87,3 +89,33 @@ class ConversationViewSet(viewsets.ReadOnlyModelViewSet):
             MessageSerializer(message).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+# --- Vistas basadas en Templates (HTML) ---
+
+@login_required
+def conversation_list(request):
+    user = request.user
+    conversations = (
+        Conversation.objects.filter(Q(buyer=user) | Q(seller=user))
+        .select_related("assessment", "buyer", "seller")
+        .distinct()
+    )
+    return render(request, "chat/conversation_list.html", {
+        "conversations": conversations
+    })
+
+
+@login_required
+def chat_detail(request, pk):
+    user = request.user
+    conversation = get_object_or_404(
+        Conversation.objects.filter(Q(buyer=user) | Q(seller=user))
+        .select_related("assessment", "buyer", "seller"),
+        pk=pk
+    )
+    messages = conversation.messages.select_related("sender").all().order_by("created_at")
+    return render(request, "chat/chat_detail.html", {
+        "conversation": conversation,
+        "messages": messages
+    })

@@ -17,20 +17,44 @@
                 <h1>Tech DNA</h1>
             </a>
 
-            <!-- DERECHA: Botones de administración, perfil y cierre de sesión -->
-            <div class="top-bar-actions">
+            <!-- DERECHA: Notificaciones, administración, perfil, chats y cierre de sesión -->
+            <div class="top-bar-actions" style="display: flex; align-items: center; gap: 10px;">
                 {% if user.is_authenticated %}
+                    <!-- INICIO: Dropdown de Notificaciones -->
+                    <div class="dropdown notification-dropdown" style="position: relative; display: inline-block;">
+                        <button id="notification-bell-btn" class="btn btn-secondary" style="position: relative; cursor: pointer;">
+                            🔔 
+                            <span id="notification-badge" class="badge bg-danger" style="display: none; position: absolute; top: -5px; right: -5px; padding: 2px 5px; font-size: 10px; border-radius: 50%; background-color: #dc3545; color: white;">0</span>
+                        </button>
+                        
+                        <div id="notification-menu" class="dropdown-menu" style="display: none; position: absolute; right: 0; background-color: white; border: 1px solid #ccc; width: 300px; max-height: 400px; overflow-y: auto; z-index: 1000; box-shadow: 0px 4px 8px rgba(0,0,0,0.1); border-radius: 4px;">
+                            <div style="padding: 10px; font-weight: bold; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #333;">
+                                <span>Notificaciones</span>
+                                <button id="mark-all-read-btn" style="font-size: 11px; background: none; border: none; color: #007bff; cursor: pointer;">Marcar todas como leídas</button>
+                            </div>
+                            <div id="notification-list">
+                                <div style="padding: 15px; text-align: center; color: #6c757d; font-size: 13px;">Cargando notificaciones...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN: Dropdown de Notificaciones -->
+
                     {% if user.is_staff %}
                         <a href="{% url 'admin:index' %}" class="btn btn-secondary">
                             Administración
                         </a>
                     {% endif %}
 
+                    <!-- Botón de Chats agregado aquí -->
+                    <a href="{% url 'chat:list' %}" class="btn btn-secondary">
+                        Mis Chats
+                    </a>
+
                     <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
                         Mi Perfil
                     </a>
 
-                    <form method="post" action="{% url 'accounts:logout' %}">
+                    <form method="post" action="{% url 'accounts:logout' %}" style="margin: 0;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-secondary">
                             Cerrar sesión
@@ -71,5 +95,124 @@
         <p>© 2026 {{ academy }}</p>
     </footer>
 
+    <!-- JavaScript para manejar la funcionalidad del menú de notificaciones -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const bellBtn = document.getElementById("notification-bell-btn");
+            const menu = document.getElementById("notification-menu");
+            const listContainer = document.getElementById("notification-list");
+            const badge = document.getElementById("notification-badge");
+            const markAllBtn = document.getElementById("mark-all-read-btn");
+
+            if (!bellBtn) return;
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie('csrftoken');
+
+            function fetchNotifications() {
+                fetch('/api/v1/notifications/')
+                    .then(response => response.json())
+                    .then(data => {
+                        renderNotifications(data);
+                    })
+                    .catch(error => console.error("Error al cargar notificaciones:", error));
+            }
+
+            function renderNotifications(notifications) {
+                listContainer.innerHTML = "";
+                let unreadCount = 0;
+
+                if (notifications.length === 0) {
+                    listContainer.innerHTML = '<div style="padding: 15px; text-align: center; color: #6c757d; font-size: 13px;">No hay notificaciones</div>';
+                    badge.style.display = "none";
+                    return;
+                }
+
+                notifications.forEach(notif => {
+                    if (!notif.is_read) unreadCount++;
+
+                    const item = document.createElement("div");
+                    item.style.padding = "10px 15px";
+                    item.style.borderBottom = "1px solid #f1f1f1";
+                    item.style.fontSize = "12px";
+                    item.style.cursor = "pointer";
+                    item.style.backgroundColor = notif.is_read ? "#ffffff" : "#f8f9fa";
+
+                    item.innerHTML = `
+                        <div style="font-weight: bold; color: #333;">${notif.title}</div>
+                        <div style="color: #666; margin-top: 2px;">${notif.body}</div>
+                        <div style="font-size: 10px; color: #999; margin-top: 4px;">${new Date(notif.created_at).toLocaleString()}</div>
+                    `;
+
+                    item.addEventListener("click", function() {
+                        if (!notif.is_read) {
+                            fetch(`/api/v1/notifications/${notif.id}/mark_as_read/`, {
+                                method: "POST",
+                                headers: {
+                                    "X-CSRFToken": csrftoken,
+                                    "Content-Type": "application/json"
+                                }
+                            }).then(() => fetchNotifications());
+                        }
+                        if (notif.link) {
+                            window.location.href = notif.link;
+                        }
+                    });
+
+                    listContainer.appendChild(item);
+                });
+
+                if (unreadCount > 0) {
+                    badge.innerText = unreadCount;
+                    badge.style.display = "inline-block";
+                } else {
+                    badge.style.display = "none";
+                }
+            }
+
+            bellBtn.addEventListener("click", function(e) {
+                e.stopPropagation();
+                if (menu.style.display === "none") {
+                    menu.style.display = "block";
+                    fetchNotifications();
+                } else {
+                    menu.style.display = "none";
+                }
+            });
+
+            window.addEventListener("click", function() {
+                if (menu) menu.style.display = "none";
+            });
+
+            menu.addEventListener("click", function(e) {
+                e.stopPropagation();
+            });
+
+            markAllBtn.addEventListener("click", function() {
+                fetch('/api/v1/notifications/mark_all_as_read/', {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrftoken,
+                        "Content-Type": "application/json"
+                    }
+                }).then(() => fetchNotifications());
+            });
+
+            fetchNotifications();
+        });
+    </script>
 </body>
 </html>

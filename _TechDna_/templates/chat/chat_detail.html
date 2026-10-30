@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4 chat-container">
+    <h2 class="mb-4">Chat con tu instructor/estudiante</h2>
+
+    <!-- Contenedor de mensajes -->
+    <div id="chat-box" class="chat-box">
+        {% for message in messages %}
+            <div class="message-wrapper {% if message.sender == request.user %}message-end{% else %}message-start{% endif %}">
+                <div class="message-bubble {% if message.sender == request.user %}message-bubble-user{% else %}message-bubble-other{% endif %}">
+                    <strong>{{ message.sender.username }}:</strong>
+                    <p class="message-text">{{ message.content }}</p>
+                </div>
+                <span class="message-date">{{ message.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+        {% empty %}
+            <p class="no-messages">No hay mensajes todavía. ¡Envía el primero!</p>
+        {% endfor %}
+    </div>
+
+    <!-- Formulario para enviar mensaje -->
+    <form id="chat-form" class="chat-form">
+        {% csrf_token %}
+        <input type="text" id="message-input" placeholder="Escribe tu mensaje aquí..." required class="chat-input">
+        <button type="submit" class="btn btn-primary chat-submit-btn">Enviar</button>
+    </form>
+</div>
+
+<!-- Estilos CSS (separados para que VS Code no muestre errores de sintaxis) -->
+<style>
+    .chat-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .chat-box {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        height: 400px;
+        overflow-y: scroll;
+        padding: 15px;
+        background-color: #f9f9f9;
+        margin-bottom: 20px;
+    }
+    .message-wrapper {
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+    }
+    .message-end {
+        align-items: flex-end;
+    }
+    .message-start {
+        align-items: flex-start;
+    }
+    .message-bubble {
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        font-size: 14px;
+    }
+    .message-bubble-user {
+        background-color: #007bff;
+        color: white;
+    }
+    .message-bubble-other {
+        background-color: #e9ecef;
+        color: #333;
+    }
+    .message-text {
+        margin: 5px 0 0 0;
+    }
+    .message-date {
+        font-size: 10px;
+        color: #888;
+        margin-top: 2px;
+    }
+    .no-messages {
+        text-align: center;
+        color: #888;
+        margin-top: 150px;
+    }
+    .chat-form {
+        display: flex;
+        gap: 10px;
+    }
+    .chat-input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .chat-submit-btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const chatBox = document.getElementById("chat-box");
+        const chatForm = document.getElementById("chat-form");
+        const messageInput = document.getElementById("message-input");
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        chatForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const content = messageInput.value.trim();
+            if (!content) return;
+
+            const conversationId = "{{ conversation.id }}"; 
+
+            fetch(`/api/v1/conversations/${conversationId}/messages/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrftoken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ content: content })
+            })
+            .then(response => {
+                if (response.ok) {
+                    messageInput.value = "";
+                    location.reload();
+                } else {
+                    console.error("Error al enviar el mensaje");
+                }
+            })
+            .catch(error => console.error("Error de red:", error));
+        });
+    });
+</script>
+{% endblock %}
