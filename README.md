@@ -72,6 +72,19 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
     - Filtrado dinámico REST mediante `django-filters` (`AssessmentFilter`) por tecnología y rol, complementado con búsqueda textual (`search_fields`) y ordenamiento por fecha y favoritos.
     - Acción personalizada `@action` para marcar/desmarcar evaluaciones como favoritas desde la API (`POST /api/v1/assessments/<pk>/favorite/`).
     - Suite completa de 6 pruebas unitarias automatizadas (`APITestCase`) validando autenticación, permisos, CRUD y filtros.
+- **Sesión 9 — Módulo de Notificaciones y Tiempo Real**
+    - Creación de la aplicación notifications con modelos y señales (signals.py) para avisos automáticos ante eventos en la plataforma.
+    - Endpoints API dedicados para la gestión, listado y marcado de notificaciones de usuario (/api/v1/notifications/).
+    - Integración de infraestructura de mensajería y colas de tareas mediante Redis ejecutado vía contenedores Docker (redis-techdna).
+- **Sesión 10 — Módulo de Chat Educativo (Estudiante / Instructor)**
+    - Implementación de la aplicación chat con los modelos Conversation y Message orientados al ecosistema educativo (student e instructor).
+    - Creación de servicios transaccionales protegidos (services.py) para la obtención/creación segura de conversaciones atadas a evaluaciones (assessment_id) y envío de mensajes con validación de participantes.
+    - Vistas web tradicionales y endpoints API en DRF para listar conversaciones, iniciar chats, enviar mensajes (/chat/api/conversations/...) y marcar mensajes como leídos.
+    - Restricción de permisos personalizada (IsConversationParticipant) para asegurar la privacidad de los mensajes.
+- **Sesión 11 — Refactorización de Dominio, UI y Endpoints API**
+   - Migración completa del modelo comercial heredado (buyer/seller) al modelo educativo (student/instructor) en serializers, servicios, permisos y señales de notificación.
+   - Ajuste de vistas web y plantillas (conversation_list.html, chat_detail.html) con enrutamiento namespaced correcto (chat:detail).
+   - Resolución de errores de deserialización y excepciones ImproperlyConfigured / AttributeError, asegurando una integración robusta entre el frontend y la API REST del chat.
 
 -------------------------
 
@@ -183,8 +196,29 @@ Para validar todas las aplicaciones del proyecto:
 python manage.py test 
 ```
 
-## 📌 Rutas Principales de Autenticación
+## 🐳 Configuración de Entorno con Docker (Redis)
+Para el correcto funcionamiento del sistema de colas, tareas en segundo plano y notificaciones en tiempo real, el proyecto utiliza un contenedor de Redis.
 
+**Comandos útiles para la gestión de Docker:**
+1. Verificar estado de los contenedores:
+
+```Bash
+docker ps -a
+```
+
+2. Iniciar el contenedor de Redis (redis-techdna):
+
+```Bash
+docker start redis-techdna
+```
+3. Detener el contenedor de Redis:
+
+```Bash
+docker stop redis-techdna
+```
+
+## 📌 Rutas Principales de Autenticación
+***Autenticación y Cuentas (accounts)***
 | Método | Ruta | Nombre de URL (`name`) | Descripción | Acceso |
 | :--- | :--- | :--- | :--- | :--- |
 | `GET`, `POST` | `/accounts/login/` | `accounts:login` | Formulario e inicio de sesión de usuario | Público |
@@ -193,6 +227,7 @@ python manage.py test
 | `GET` | `/accounts/profile/` | `accounts:profile` | Vista de detalle del perfil técnico y avatar | Autenticado |
 | `GET`, `POST` | `/accounts/profile/edit/` | `accounts:profile_edit` | Edición de datos personales, enlaces y avatar (`multipart`) | Autenticado |
 
+***Evaluaciones Técnicas (assessments)***
 | Método | Ruta | Nombre de URL (`name`) | Descripción | Acceso |
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/assessments/` | `assessments:list` | Listado público de evaluaciones con filtros y búsqueda | Público |
@@ -205,6 +240,25 @@ python manage.py test
 | `GET`, `POST` | `/assessments/<pk>/delete/` | `assessments:delete` | Eliminar evaluación propia | Propietario (403 si no) |
 | `GET` | `/assessments/<pk>/<slug>/` | `assessments:detail` | Vista de detalle de la evaluación (incrementa visitas) | Público |
 
+***Chat y Mensajería Educativa (chat)***
+| Método | Ruta | Nombre de URL (`name`) | Descripción | Acceso |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/chat/` | `chat:list` | Bandeja de entrada de conversaciones del usuario | Autenticado |
+| `GET` | `/chat/<int:pk>/` | `chat:detail` | Vista de detalle de una conversación y panel de mensajes | Autenticado |
+| `POST` | `/chat/api/conversations/start/` | API / DRF | Mis evaluaciones creadas (incluidas inactivas) | Autenticado |
+| `POST` | `/chat/api/conversations/<int:pk>/send/` |  API / DRF |Envía un mensaje dentro de una conversación activa | Autenticado |
+| `POST` | `/chat/api/conversations/<int:pk>/read/` | API / DRF | Marca los mensajes pendientes como leídos en la conversación | Autenticado |
+
+***API REST y Notificaciones (api/v1/)***
+| Método | Ruta | Descripción | Acceso |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/technologies/`| Listado de tecnologías disponibles | Público / Autenticado |
+| `GET` | `/api/v1/roles/` | Listado de roles profesionales disponibles | Público / Autenticado |
+| `GET`, `POST` | `/api/v1/assessments/` |Listado, filtrado y creación de evaluaciones vía AP | Público (GET) / Autenticado (POST) |
+| `GET`, `POST`, `DELETE` | `/api/v1/assessments/<pk>/` | Detalle, actualización y borrado de evaluaciones | Propietario o Lectura |
+| `POST` | `/api/v1/assessments/<pk>/favorite/` | Alternar favorito en una evaluación vía API | Autenticado |
+| `GET` | `/api/v1/notifications/` | Listado de notificaciones del usuario autenticadoI | Autenticado |
+
 
 
 ## 👥 Equipo de Desarrollo
@@ -212,8 +266,8 @@ python manage.py test
 | Nombre | Rol / Track | GitHub | LinkedIn |
 | :--- | :--- | :--- | :--- |
 | **Angelo** | Full Stack Developer | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
-| **Maite** | Sprint3 Scrum Master & Dev | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
-| **Mio** | Full Stack Developer | [github](https://github.com/miaryl) | [linkedin](https://linkedin.com/in/mio-ogura) |
+| **Maite** | Full Stack Developer | [github](https://github.com/) | [linkedin](https://linkedin.com/) |
+| **Mio** |  Sprint 4 Scrum Master & Dev| [github](https://github.com/miaryl) | [linkedin](https://linkedin.com/in/mio-ogura) |
 
 
 
