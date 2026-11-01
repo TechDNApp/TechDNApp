@@ -8,8 +8,8 @@ from .tasks import create_notification_async
 def notify_new_chat_message(sender, instance, created, **kwargs):
     if created:
         conv = instance.conversation
-        # Determine the recipient (if sender is buyer, recipient is seller/profesor, and vice versa)
-        recipient = conv.seller if instance.sender == conv.buyer else conv.buyer
+        # Determine the recipient (if sender is student, recipient is instructor, and vice versa)
+        recipient = conv.instructor if instance.sender == conv.student else conv.student
         
         create_notification_async.delay(
             recipient_id=recipient.pk,

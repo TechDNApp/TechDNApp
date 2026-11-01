@@ -29,8 +29,8 @@ class ConversationViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return (
-            Conversation.objects.filter(Q(buyer=user) | Q(seller=user))
-            .select_related("assessment", "buyer", "seller")
+            Conversation.objects.filter(Q(student=user) | Q(instructor=user))
+            .select_related("assessment", "student", "instructor")
             .prefetch_related("messages")
         )
 
@@ -41,7 +41,7 @@ class ConversationViewSet(viewsets.ReadOnlyModelViewSet):
 
         try:
             conversation = get_or_create_conversation(
-                buyer=request.user,
+                student=request.user,
                 assessment_id=serializer.validated_data["assessment"].pk,
             )
         except ValidationError as error:
@@ -91,14 +91,13 @@ class ConversationViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
 
-# --- Vistas basadas en Templates (HTML) ---
 
 @login_required
 def conversation_list(request):
     user = request.user
     conversations = (
-        Conversation.objects.filter(Q(buyer=user) | Q(seller=user))
-        .select_related("assessment", "buyer", "seller")
+        Conversation.objects.filter(Q(student=user) | Q(instructor=user))
+        .select_related("assessment", "student", "instructor")
         .distinct()
     )
     return render(request, "chat/conversation_list.html", {
@@ -110,8 +109,8 @@ def conversation_list(request):
 def chat_detail(request, pk):
     user = request.user
     conversation = get_object_or_404(
-        Conversation.objects.filter(Q(buyer=user) | Q(seller=user))
-        .select_related("assessment", "buyer", "seller"),
+        Conversation.objects.filter(Q(student=user) | Q(instructor=user))
+        .select_related("assessment", "student", "instructor"),
         pk=pk
     )
     messages = conversation.messages.select_related("sender").all().order_by("created_at")

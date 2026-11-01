@@ -4,7 +4,7 @@ from .models import Conversation, Message
 
 
 class IsConversationParticipant(BasePermission):
-    """Allow access only to users participating in the conversation."""
+    """Permite el acceso solo si el usuario es el estudiante o el instructor de la conversación."""
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated)
@@ -17,4 +17,4 @@ class IsConversationParticipant(BasePermission):
         else:
             return False
 
-        return request.user in (conversation.buyer, conversation.seller)
+        return request.user in (conversation.student, conversation.instructor)

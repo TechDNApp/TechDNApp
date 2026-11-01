@@ -10,7 +10,7 @@
             <div class="message-wrapper {% if message.sender == request.user %}message-end{% else %}message-start{% endif %}">
                 <div class="message-bubble {% if message.sender == request.user %}message-bubble-user{% else %}message-bubble-other{% endif %}">
                     <strong>{{ message.sender.username }}:</strong>
-                    <p class="message-text">{{ message.content }}</p>
+                    <p class="message-text">{{ message.text }}</p>
                 </div>
                 <span class="message-date">{{ message.created_at|date:"d/m/Y H:i" }}</span>
             </div>
@@ -27,7 +27,7 @@
     </form>
 </div>
 
-<!-- Estilos CSS (separados para que VS Code no muestre errores de sintaxis) -->
+<!-- Estilos CSS -->
 <style>
     .chat-container {
         max-width: 800px;
@@ -127,18 +127,19 @@
 
         chatForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            const content = messageInput.value.trim();
-            if (!content) return;
+            const textValue = messageInput.value.trim();
+            if (!textValue) return;
 
             const conversationId = "{{ conversation.id }}"; 
 
-            fetch(`/api/v1/conversations/${conversationId}/messages/`, {
+            fetch(`/chat/api/conversations/${conversationId}/send/`, {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": csrftoken,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ content: content })
+                
+                body: JSON.stringify({ text: textValue })
             })
             .then(response => {
                 if (response.ok) {
