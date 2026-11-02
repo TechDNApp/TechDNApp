@@ -1,5 +1,7 @@
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Q
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -27,8 +29,8 @@ class ConversationViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return (
-            Conversation.objects.filter(Q(buyer=user) | Q(seller=user))
-            .select_related("assessment", "buyer", "seller")
+            Conversation.objects.filter(Q(student=user) | Q(instructor=user))
+            .select_related("assessment", "student", "instructor")
             .prefetch_related("messages")
         )
 
@@ -39,7 +41,7 @@ class ConversationViewSet(viewsets.ReadOnlyModelViewSet):
 
         try:
             conversation = get_or_create_conversation(
-                buyer=request.user,
+                student=request.user,
                 assessment_id=serializer.validated_data["assessment"].pk,
             )
         except ValidationError as error:
@@ -87,3 +89,32 @@ class ConversationViewSet(viewsets.ReadOnlyModelViewSet):
             MessageSerializer(message).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+
+@login_required
+def conversation_list(request):
+    user = request.user
+    conversations = (
+        Conversation.objects.filter(Q(student=user) | Q(instructor=user))
+        .select_related("assessment", "student", "instructor")
+        .distinct()
+    )
+    return render(request, "chat/conversation_list.html", {
+        "conversations": conversations
+    })
+
+
+@login_required
+def chat_detail(request, pk):
+    user = request.user
+    conversation = get_object_or_404(
+        Conversation.objects.filter(Q(student=user) | Q(instructor=user))
+        .select_related("assessment", "student", "instructor"),
+        pk=pk
+    )
+    messages = conversation.messages.select_related("sender").all().order_by("created_at")
+    return render(request, "chat/chat_detail.html", {
+        "conversation": conversation,
+        "messages": messages
+    })

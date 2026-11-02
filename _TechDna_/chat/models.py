@@ -9,15 +9,15 @@ class Conversation(models.Model):
         on_delete=models.CASCADE,
         related_name="conversations",
     )
-    buyer = models.ForeignKey(
+    student = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="buyer_conversations",
+        related_name="student_conversations",
     )
-    seller = models.ForeignKey(
+    instructor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="seller_conversations",
+        related_name="instructor_conversations",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -26,13 +26,13 @@ class Conversation(models.Model):
         ordering = ["-updated_at"]
         constraints = [
             models.UniqueConstraint(
-                fields=["assessment", "buyer"],
-                name="unique_conversation_per_assessment_buyer",
+                fields=["assessment", "student", "instructor"],
+                name="unique_conversation_per_assessment_participants",
             )
         ]
 
     def __str__(self):
-        return f"Chat #{self.pk} - {self.assessment.title} ({self.buyer.username} y {self.seller.username})"
+        return f"Chat #{self.pk} - {self.assessment.title} ({self.student.username} y {self.instructor.username})"
 
 
 class Message(models.Model):

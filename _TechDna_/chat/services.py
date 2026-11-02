@@ -5,13 +5,13 @@ from .models import Conversation, Message
 
 
 @transaction.atomic
-def get_or_create_conversation(buyer, assessment_id):
+def get_or_create_conversation(student, assessment_id):
     """
-    Obtiene o inicia una conversación entre un usuario y el dueño de una evaluación.
+    Obtiene o inicia una conversación entre un estudiante y el instructor (dueño de la evaluación).
     Bloquea la fila de la evaluación para asegurar consistencia.
     """
     assessment = Assessment.objects.select_for_update().get(pk=assessment_id)
-    if assessment.owner == buyer:
+    if assessment.owner == student:
         raise ValidationError(
             "No puedes iniciar una conversación sobre tu propia evaluación."
         )
@@ -21,8 +21,8 @@ def get_or_create_conversation(buyer, assessment_id):
         )
     conversation, _ = Conversation.objects.get_or_create(
         assessment=assessment,
-        buyer=buyer,
-        defaults={"seller": assessment.owner},
+        student=student,
+        defaults={"instructor": assessment.owner},
     )
     return conversation
 
@@ -30,13 +30,13 @@ def get_or_create_conversation(buyer, assessment_id):
 @transaction.atomic
 def send_message(user, conversation_id, text):
     """
-    Envía un mensaje validando que el remitente sea participante de la conversación.
+    Envía un mensaje validando que el remitente sea participante de la conversación (estudiante o instructor).
     """
     clean_text = text.strip()
     if not clean_text:
         raise ValidationError("El mensaje no puede estar vacío.")
     conversation = Conversation.objects.select_for_update().get(pk=conversation_id)
-    if user != conversation.buyer and user != conversation.seller:
+    if user != conversation.student and user != conversation.instructor:
         raise PermissionDenied(
             "No tienes permiso para enviar mensajes en esta conversación."
         )
@@ -56,7 +56,7 @@ def mark_messages_as_read(conversation_id, user):
     Marca como leídos los mensajes recibidos pendientes.
     """
     conversation = Conversation.objects.get(pk=conversation_id)
-    if user != conversation.buyer and user != conversation.seller:
+    if user != conversation.student and user != conversation.instructor:
         raise PermissionDenied("No tienes acceso a esta conversación.")
     Message.objects.filter(
         conversation=conversation,

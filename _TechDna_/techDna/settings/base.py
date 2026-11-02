@@ -57,7 +57,8 @@ LOCAL_APPS = [
          "skills",
          "assessments",
          "api",
-         "chat"
+         "chat",
+         "notifications",
      ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -210,3 +211,11 @@ if "test" in sys.argv or "test_coverage" in sys.argv:
             "NAME": ":memory:",
         }
     }
+
+# Celery & Redis Configuration
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE

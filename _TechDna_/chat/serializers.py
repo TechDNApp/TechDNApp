@@ -23,8 +23,8 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ConversationSerializer(serializers.ModelSerializer):
-    buyer_username = serializers.CharField(source="buyer.username", read_only=True)
-    seller_username = serializers.CharField(source="seller.username", read_only=True)
+    student_username = serializers.CharField(source="student.username", read_only=True)
+    instructor_username = serializers.CharField(source="instructor.username", read_only=True)
     assessment_title = serializers.CharField(
         source="assessment.title",
         read_only=True,
@@ -38,10 +38,10 @@ class ConversationSerializer(serializers.ModelSerializer):
             "id",
             "assessment",
             "assessment_title",
-            "buyer",
-            "buyer_username",
-            "seller",
-            "seller_username",
+            "student",
+            "student_username",
+            "instructor",
+            "instructor_username",
             "created_at",
             "updated_at",
             "last_message",
