@@ -50,6 +50,13 @@
             </div>
             {% endif %}
 
+            {% if user.location_name %}
+            <div class="profile-data-item">
+                <span class="profile-data-label">Zona</span>
+                <span class="profile-data-value">{{ user.location_name }}</span>
+            </div>
+            {% endif %}
+
             {% if user.github_url %}
             <div class="profile-data-item">
                 <span class="profile-data-label">GitHub</span>

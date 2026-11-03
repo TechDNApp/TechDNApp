@@ -85,6 +85,12 @@ Plataforma de evaluación técnica y gestión de talento para candidatos y evalu
    - Migración completa del modelo comercial heredado (buyer/seller) al modelo educativo (student/instructor) en serializers, servicios, permisos y señales de notificación.
    - Ajuste de vistas web y plantillas (conversation_list.html, chat_detail.html) con enrutamiento namespaced correcto (chat:detail).
    - Resolución de errores de deserialización y excepciones ImproperlyConfigured / AttributeError, asegurando una integración robusta entre el frontend y la API REST del chat.
+- **Sesión 12 — Geolocalización, PostGIS y Búsquedas por Proximidad**
+   - Extensión espacial PostGIS en PostgreSQL e integración de GeoDjango (`django.contrib.gis`, motor `postgis`).
+   - Campos `location` (`PointField`, WGS84 / SRID 4326, `geography=True`) y `location_name` en `accounts.User`, editables desde el perfil (latitud/longitud) y el admin.
+   - Servicio `accounts.services.get_candidates_nearby()`: candidatos dentro de un radio en km, anotados y ordenados por distancia (`Distance`, `D(km=...)`).
+   - Endpoint `GET /api/v1/candidates/?lat=...&lng=...&distance_km=10` (autenticado) con `distance_km` en la respuesta, validación de parámetros (400) y coordenadas redondeadas a ~1 km por privacidad.
+   - Suite de tests espaciales en `accounts/test_geo.py` (servicio, API y formulario de perfil).
 
 -------------------------
 
@@ -194,6 +200,36 @@ Para validar todas las aplicaciones del proyecto:
 
 ```bash
 python manage.py test 
+```
+
+## 🌍 PostGIS y GeoDjango (Sesión 12)
+GeoDjango necesita las librerías nativas GDAL/GEOS/PROJ y la extensión PostGIS en la base de datos.
+
+1. Instalar PostGIS (en macOS con Homebrew instala también GDAL, GEOS y PROJ):
+
+```bash
+brew install postgis
+```
+
+2. Activar la extensión con el superusuario de PostgreSQL (en Homebrew, tu usuario de macOS). Se crea también en `template1` para que la BD de tests (`test_techdna`) la herede sin dar permisos de superusuario al usuario de la app:
+
+```bash
+psql -d techdna -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+```
+
+```bash
+psql -d template1 -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+```
+
+3. Los tests ya no usan SQLite en memoria (no soporta campos espaciales): corren sobre PostgreSQL/PostGIS.
+
+4. Si Django no encuentra GDAL/GEOS, añade al `.env` `GDAL_LIBRARY_PATH` y `GEOS_LIBRARY_PATH` (ver `.env.example`).
+
+5. Migrar y probar:
+
+```bash
+python manage.py migrate
+python manage.py test accounts.test_geo
 ```
 
 ## 🐳 Configuración de Entorno con Docker (Redis)
