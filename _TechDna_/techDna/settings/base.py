@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 import os
-import sys
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,6 +40,7 @@ DJANGO_APPS = [
          "django.contrib.sessions",
          "django.contrib.messages",
          "django.contrib.staticfiles",
+         "django.contrib.gis",  # Sesión 12: GeoDjango (PostGIS)
      ]
 
 THIRD_PARTY_APPS = [
@@ -126,7 +126,7 @@ WSGI_APPLICATION = "techDna.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",  # Sesión 12: motor espacial
         "NAME": os.getenv("POSTGRES_DB", "techDNA"),
         "USER": os.getenv("POSTGRES_USER", "techDNA_user"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", ""),
@@ -134,6 +134,16 @@ DATABASES = {
         "PORT": os.getenv("POSTGRES_PORT", "5432"),
     }
 }
+
+
+# Sesión 12: GeoDjango necesita las librerías nativas GDAL y GEOS.
+# En macOS con Homebrew (Apple Silicon) Django no siempre las encuentra solo:
+# en ese caso define GDAL_LIBRARY_PATH y GEOS_LIBRARY_PATH en el .env, p. ej.
+# /opt/homebrew/lib/libgdal.dylib y /opt/homebrew/lib/libgeos_c.dylib
+if os.getenv("GDAL_LIBRARY_PATH"):
+    GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH")
+if os.getenv("GEOS_LIBRARY_PATH"):
+    GEOS_LIBRARY_PATH = os.getenv("GEOS_LIBRARY_PATH")
 
 
 # Password validation
@@ -204,13 +214,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Configuración para usar SQLite en memoria durante los tests
-if "test" in sys.argv or "test_coverage" in sys.argv:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": ":memory:",
-        }
-    }
+# Sesión 12: los tests ya no usan SQLite en memoria. User.location es un
+# PointField y SQLite no soporta tipos espaciales, así que los tests corren
+# sobre PostGIS (Django crea y borra la BD test_<nombre> automáticamente).
 
 # Celery & Redis Configuration
 CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.gis.db import models as gis_models
 from django.db import models
 
 
@@ -50,6 +51,23 @@ class User(AbstractUser):
     linkedin_url = models.URLField(
         blank=True,
         verbose_name="Perfil de LinkedIn",
+    )
+
+    # Sesión 12: geolocalización (PostGIS). Point(longitud, latitud) en WGS84.
+    # geography=True para que las distancias se calculen en metros reales
+    # sobre la esfera terrestre y no en grados.
+    location = gis_models.PointField(
+        srid=4326,
+        geography=True,
+        null=True,
+        blank=True,
+        verbose_name="Ubicación",
+    )
+    location_name = models.CharField(
+        max_length=150,
+        blank=True,
+        verbose_name="Zona",
+        help_text="Nombre legible de la zona o ciudad (ej. Hospitalet de Llobregat)",
     )
 
     def __str__(self):
